@@ -4669,6 +4669,200 @@ Message: ${note||'N/A'}`
 })();
 </script>
 
+<!-- ══ JARVIS AI COACH ══ -->
+<button id="jarvis-fab" onclick="toggleJarvis()" aria-label="Jarvis AI Coach" class="jarvis-pulse">
+  <span class="icon-jarvis">🎙️</span>
+</button>
+<div id="jarvis-panel">
+  <div class="jarvis-header">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span style="font-size:18px;">🤖</span>
+      <div>
+        <div style="font-weight:700; color:var(--gold); font-size:14px; margin-bottom:2px;">Jarvis</div>
+        <div style="font-size:10px; color:var(--muted);">AI TPM Coach</div>
+      </div>
+    </div>
+    <button class="modal-close" onclick="toggleJarvis()" style="position:static;">×</button>
+  </div>
+  <div class="jarvis-body" id="jarvis-body">
+    <div class="jarvis-msg ai">Hello! I am Jarvis, your personal TPM Coach. What challenges are you facing in your TPM interviews today? Switch on the mic and let's talk.</div>
+  </div>
+  <div class="jarvis-input-area">
+    <div style="position:relative; width:100%;">
+      <textarea id="jarvis-input" placeholder="Type or click the microphone to speak..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendJarvisMsg();}"></textarea>
+      <button id="jarvis-mic-btn" onclick="toggleJarvisMic()">🎤</button>
+    </div>
+    <button id="jarvis-send-btn" onclick="sendJarvisMsg()">Send</button>
+  </div>
+</div>
+
+<style>
+/* Jarvis UI Styles */
+#jarvis-fab {
+  position:fixed; bottom:24px; left:24px; width:60px; height:60px;
+  background:rgba(20,20,20,0.95); border:1px solid rgba(201,168,76,.4);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; z-index:998; box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  transition:all .3s cubic-bezier(.175,.885,.32,1.275);
+}
+#jarvis-fab:hover { transform:scale(1.08); background:rgba(30,30,30,0.95); border-color:var(--gold); }
+.jarvis-pulse { animation: j-pulse 2s infinite; }
+@keyframes j-pulse { 0% { box-shadow: 0 0 0 0 rgba(201,168,76,0.4); } 70% { box-shadow: 0 0 0 15px rgba(201,168,76,0); } 100% { box-shadow: 0 0 0 0 rgba(201,168,76,0); } }
+.icon-jarvis { font-size:24px; }
+
+#jarvis-panel {
+  position:fixed; bottom:100px; left:24px; width:360px; height:500px; max-height:calc(100vh - 120px);
+  background:rgba(18,18,18,0.95); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,0.08); border-radius:12px;
+  display:none; flex-direction:column; z-index:999; box-shadow:0 12px 40px rgba(0,0,0,0.5);
+  font-family:'Syne',sans-serif; overflow:hidden;
+}
+#jarvis-panel.open { display:flex; animation:slideUpFade .3s ease forwards; }
+
+.jarvis-header {
+  padding:16px; border-bottom:1px solid rgba(255,255,255,.05);
+  display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2);
+}
+.jarvis-body {
+  flex:1; padding:16px; overflow-y:auto; display:flex; flex-direction:column; gap:12px;
+}
+.jarvis-msg {
+  padding:10px 14px; border-radius:8px; font-size:13px; line-height:1.5; max-width:85%;
+}
+.jarvis-msg.ai { background:rgba(255,255,255,0.05); color:#f0ece4; align-self:flex-start; border-bottom-left-radius:2px; }
+.jarvis-msg.user { background:rgba(201,168,76,0.15); color:var(--gold); align-self:flex-end; border-bottom-right-radius:2px; border:1px solid rgba(201,168,76,0.2); }
+
+.jarvis-input-area {
+  padding:16px; border-top:1px solid rgba(255,255,255,.05); display:flex; gap:10px; background:rgba(0,0,0,0.2);
+}
+#jarvis-input {
+  width:100%; height:44px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1);
+  color:#fff; padding:10px 40px 10px 12px; border-radius:6px; outline:none; resize:none; font-family:'DM Mono',monospace;
+  font-size:12px; transition:border .2s;
+}
+#jarvis-input:focus { border-color:var(--gold); }
+#jarvis-mic-btn {
+  position:absolute; right:8px; top:50%; transform:translateY(-50%);
+  background:none; border:none; color:var(--muted); font-size:16px; cursor:pointer; transition:color .2s;
+}
+#jarvis-mic-btn:hover { color:var(--gold); }
+#jarvis-mic-btn.recording { color:#ff4757; animation:pulse-mic 1s infinite alternate; }
+#jarvis-send-btn {
+  background:var(--gold); color:#000; border:none; border-radius:6px; padding:0 14px;
+  font-weight:700; cursor:pointer; font-family:'Syne',sans-serif; transition:all .2s;
+}
+#jarvis-send-btn:hover { background:#d4b355; transform:translateY(-1px); }
+
+@media(max-width:768px){
+  #jarvis-panel { left:12px; right:12px; width:auto; bottom:96px; height:60vh; }
+  #jarvis-fab { left:auto; right:20px; bottom:20px; }
+}
+</style>
+
+<script>
+(function(){
+  let isJarvisMicRecording = false;
+  let jarvisRec;
+  let chatHistory = [];
+
+  window.toggleJarvis = function() {
+    const panel = document.getElementById('jarvis-panel');
+    panel.classList.toggle('open');
+    document.getElementById('jarvis-fab').classList.remove('jarvis-pulse');
+  };
+
+  window.toggleJarvisMic = function() {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) return alert('Speech Recognition not supported in this browser.');
+    
+    const input = document.getElementById('jarvis-input');
+    const micBtn = document.getElementById('jarvis-mic-btn');
+
+    if (isJarvisMicRecording) {
+      if(jarvisRec) jarvisRec.stop();
+      return;
+    }
+
+    jarvisRec = new SpeechRec();
+    jarvisRec.continuous = true;
+    jarvisRec.interimResults = true;
+
+    jarvisRec.onstart = () => {
+      isJarvisMicRecording = true;
+      micBtn.classList.add('recording');
+      input.placeholder = "Listening...";
+    };
+
+    jarvisRec.onresult = e => {
+      let finalTrans = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) finalTrans += e.results[i][0].transcript + ' ';
+      }
+      if (finalTrans) {
+        input.value += (input.value ? ' ' : '') + finalTrans;
+      }
+    };
+
+    jarvisRec.onend = () => {
+      isJarvisMicRecording = false;
+      micBtn.classList.remove('recording');
+      input.placeholder = "Type or click the microphone to speak...";
+      jarvisRec = null;
+    };
+    
+    jarvisRec.onerror = () => jarvisRec.stop();
+    jarvisRec.start();
+  };
+
+  window.sendJarvisMsg = async function() {
+    const input = document.getElementById('jarvis-input');
+    const text = input.value.trim();
+    if (!text) return;
+    
+    input.value = '';
+    appendJarvisMsg('user', text);
+    chatHistory.push({ role: 'user', content: text });
+    
+    const loadingId = appendJarvisMsg('ai', 'Thinking...');
+    
+    try {
+      const res = await fetch('/api/jarvis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: chatHistory })
+      });
+      const data = await res.json();
+      
+      const el = document.getElementById(loadingId);
+      if(el) {
+        // Simple markdown parsing for bold and line breaks
+        let formatted = data.reply.replace(/\n/g, '<br>');
+        formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        el.innerHTML = formatted;
+      }
+      chatHistory.push({ role: 'assistant', content: data.reply });
+      
+      const body = document.getElementById('jarvis-body');
+      body.scrollTop = body.scrollHeight;
+    } catch(e) {
+      console.error(e);
+      document.getElementById(loadingId).innerText = "Error: Could not reach Jarvis brain.";
+    }
+  };
+
+  function appendJarvisMsg(role, text) {
+    const id = 'msg-' + Date.now();
+    const div = document.createElement('div');
+    div.className = 'jarvis-msg ' + role;
+    div.id = id;
+    div.textContent = text;
+    const container = document.getElementById('jarvis-body');
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+    return id;
+  }
+})();
+</script>
 
 </body>
 </html>
