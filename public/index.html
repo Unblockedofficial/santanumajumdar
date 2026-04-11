@@ -2052,9 +2052,9 @@ body:has(button:hover) #cur-ring { width: 60px; height: 60px; }
         <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
         <span class="toolbar-label">Interview Sim</span>
       </button>
-      <button class="toolbar-btn" onclick="openProgramPilot();closeDrawer()">
-        <svg viewBox="0 0 24 24" style="fill:var(--gold)"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 9H3V5h9v7zm9 7h-9v-7h9v7zM12 5h9v7h-9z"/></svg>
-        <span class="toolbar-label" style="color:var(--gold)">ProgramPilot</span>
+      <button class="toolbar-btn" onclick="toggleJarvis();closeDrawer()">
+        <svg viewBox="0 0 24 24" style="fill:#e74c3c"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
+        <span class="toolbar-label" style="color:#e74c3c; font-weight:700;">Jarvis AI Coach</span>
       </button>
     </div>
   </div>
@@ -4670,92 +4670,94 @@ Message: ${note||'N/A'}`
 </script>
 
 <!-- ══ JARVIS AI COACH ══ -->
-<button id="jarvis-fab" onclick="toggleJarvis()" aria-label="Jarvis AI Coach" class="jarvis-pulse">
-  <span class="icon-jarvis">🎙️</span>
-</button>
 <div id="jarvis-panel">
-  <div class="jarvis-header">
-    <div style="display:flex; align-items:center; gap:8px;">
-      <span style="font-size:18px;">🤖</span>
-      <div>
-        <div style="font-weight:700; color:var(--gold); font-size:14px; margin-bottom:2px;">Jarvis</div>
-        <div style="font-size:10px; color:var(--muted);">AI TPM Coach</div>
-      </div>
+  <div class="chat-header">
+    <div class="chat-avatar" style="background:linear-gradient(135deg, #e74c3c, #c0392b); color:#fff; font-style:normal;">JV</div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">Jarvis</div>
+      <div class="chat-header-sub">Elite TPM Coach</div>
     </div>
-    <button class="modal-close" onclick="toggleJarvis()" style="position:static;">×</button>
+    <div id="persona-badge" style="background:rgba(231,76,60,0.1); color:#e74c3c; border-color:rgba(231,76,60,0.2);">AI Powered</div>
   </div>
   <div class="jarvis-body" id="jarvis-body">
-    <div class="jarvis-msg ai">Hello! I am Jarvis, your personal TPM Coach. What challenges are you facing in your TPM interviews today? Switch on the mic and let's talk.</div>
+    <div class="jarvis-msg ai">Hello! I am Jarvis, your personal TPM Coach. What specific interview or program management challenges can I help you with?</div>
   </div>
-  <div class="jarvis-input-area">
-    <div style="position:relative; width:100%;">
-      <textarea id="jarvis-input" placeholder="Type or click the microphone to speak..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendJarvisMsg();}"></textarea>
-      <button id="jarvis-mic-btn" onclick="toggleJarvisMic()">🎤</button>
-    </div>
-    <button id="jarvis-send-btn" onclick="sendJarvisMsg()">Send</button>
+  <div class="chat-input-row">
+    <textarea id="jarvis-input" placeholder="Speak or type to Jarvis..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendJarvisMsg();}"></textarea>
+    <button id="jarvis-mic-btn" onclick="toggleJarvisMic()" title="Voice input">
+      <svg viewBox="0 0 24 24" style="width:20px; height:20px; fill:currentColor;"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+    </button>
+    <button id="jarvis-send" onclick="sendJarvisMsg()" aria-label="Send">
+      <svg viewBox="0 0 24 24" style="width:20px; height:20px; fill:currentColor;"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
   </div>
+  <div class="chat-powered">Jarvis AI · Engineered by Santanu</div>
 </div>
-
 <style>
-/* Jarvis UI Styles */
-#jarvis-fab {
-  position:fixed; bottom:24px; left:24px; width:60px; height:60px;
-  background:rgba(20,20,20,0.95); border:1px solid rgba(201,168,76,.4);
-  border-radius:50%; display:flex; align-items:center; justify-content:center;
-  cursor:pointer; z-index:998; box-shadow:0 8px 24px rgba(0,0,0,0.4);
-  transition:all .3s cubic-bezier(.175,.885,.32,1.275);
-}
-#jarvis-fab:hover { transform:scale(1.08); background:rgba(30,30,30,0.95); border-color:var(--gold); }
-.jarvis-pulse { animation: j-pulse 2s infinite; }
-@keyframes j-pulse { 0% { box-shadow: 0 0 0 0 rgba(201,168,76,0.4); } 70% { box-shadow: 0 0 0 15px rgba(201,168,76,0); } 100% { box-shadow: 0 0 0 0 rgba(201,168,76,0); } }
-.icon-jarvis { font-size:24px; }
 
+/* ── JARVIS PANEL (Orbit-Style) ── */
 #jarvis-panel {
-  position:fixed; bottom:100px; left:24px; width:360px; height:500px; max-height:calc(100vh - 120px);
-  background:rgba(18,18,18,0.95); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
-  border:1px solid rgba(255,255,255,0.08); border-radius:12px;
-  display:none; flex-direction:column; z-index:999; box-shadow:0 12px 40px rgba(0,0,0,0.5);
-  font-family:'Syne',sans-serif; overflow:hidden;
+  position: fixed !important;
+  bottom: 80px !important;
+  right: 25px !important;
+  width: 400px;
+  max-width: calc(100vw - 40px);
+  max-height: 600px;
+  display: none;
+  flex-direction: column;
+  background: var(--ink2);
+  border: 1px solid var(--border2);
+  z-index: 10005;
+  box-shadow: 0 24px 80px rgba(0,0,0,.9), 0 0 0 1px rgba(231,76,60,.15);
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: 'DM Mono', monospace;
+  pointer-events: all;
+  visibility: visible;
+  opacity: 1;
 }
-#jarvis-panel.open { display:flex; animation:slideUpFade .3s ease forwards; }
+#jarvis-panel.open {
+  display: flex !important;
+  animation: jarvisFadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes jarvisFadeUp {
+  from { opacity: 0; transform: translateY(30px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 
-.jarvis-header {
-  padding:16px; border-bottom:1px solid rgba(255,255,255,.05);
-  display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2);
-}
 .jarvis-body {
-  flex:1; padding:16px; overflow-y:auto; display:flex; flex-direction:column; gap:12px;
+  flex: 1;
+  padding: 24px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 300px;
 }
-.jarvis-msg {
-  padding:10px 14px; border-radius:8px; font-size:13px; line-height:1.5; max-width:85%;
-}
-.jarvis-msg.ai { background:rgba(255,255,255,0.05); color:#f0ece4; align-self:flex-start; border-bottom-left-radius:2px; }
-.jarvis-msg.user { background:rgba(201,168,76,0.15); color:var(--gold); align-self:flex-end; border-bottom-right-radius:2px; border:1px solid rgba(201,168,76,0.2); }
 
-.jarvis-input-area {
-  padding:16px; border-top:1px solid rgba(255,255,255,.05); display:flex; gap:10px; background:rgba(0,0,0,0.2);
+.jarvis-msg {
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.6;
+  max-width: 85%;
+  font-family: 'DM Mono', monospace;
 }
-#jarvis-input {
-  width:100%; height:44px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1);
-  color:#fff; padding:10px 40px 10px 12px; border-radius:6px; outline:none; resize:none; font-family:'DM Mono',monospace;
-  font-size:12px; transition:border .2s;
-}
-#jarvis-input:focus { border-color:var(--gold); }
+.jarvis-msg.ai { background: rgba(255,255,255,0.04); color: #f0ece4; align-self: flex-start; }
+.jarvis-msg.user { background: rgba(231,76,60,0.1); color: #ff4757; align-self: flex-end; border: 1px solid rgba(231,76,60,0.2); }
+
 #jarvis-mic-btn {
-  position:absolute; right:8px; top:50%; transform:translateY(-50%);
-  background:none; border:none; color:var(--muted); font-size:16px; cursor:pointer; transition:color .2s;
+  background: none; border: none; color: var(--muted); cursor: pointer; padding: 10px; transition: color .2s; display: flex; align-items: center;
 }
-#jarvis-mic-btn:hover { color:var(--gold); }
-#jarvis-mic-btn.recording { color:#ff4757; animation:pulse-mic 1s infinite alternate; }
-#jarvis-send-btn {
-  background:var(--gold); color:#000; border:none; border-radius:6px; padding:0 14px;
-  font-weight:700; cursor:pointer; font-family:'Syne',sans-serif; transition:all .2s;
+#jarvis-mic-btn.recording { color: #e74c3c; animation: pulse-mic 1s infinite alternate; }
+#jarvis-send {
+  background: none; border: none; color: var(--gold); cursor: pointer; padding: 10px; display: flex; align-items: center;
 }
-#jarvis-send-btn:hover { background:#d4b355; transform:translateY(-1px); }
+#jarvis-send:hover { color: var(--gold-lt); }
 
 @media(max-width:768px){
-  #jarvis-panel { left:12px; right:12px; width:auto; bottom:96px; height:60vh; }
-  #jarvis-fab { left:auto; right:20px; bottom:20px; }
+  #jarvis-panel { width: calc(100vw - 24px); left: 12px; bottom: 96px; }
+  #jarvis-fab { bottom: 20px; left: 20px; }
 }
 </style>
 
@@ -4768,7 +4770,10 @@ Message: ${note||'N/A'}`
   window.toggleJarvis = function() {
     const panel = document.getElementById('jarvis-panel');
     panel.classList.toggle('open');
-    document.getElementById('jarvis-fab').classList.remove('jarvis-pulse');
+    if (panel.classList.contains('open')) {
+      const body = document.getElementById('jarvis-body');
+      body.scrollTop = body.scrollHeight;
+    }
   };
 
   window.toggleJarvisMic = function() {
@@ -4806,7 +4811,7 @@ Message: ${note||'N/A'}`
     jarvisRec.onend = () => {
       isJarvisMicRecording = false;
       micBtn.classList.remove('recording');
-      input.placeholder = "Type or click the microphone to speak...";
+      input.placeholder = "Speak or type to Jarvis...";
       jarvisRec = null;
     };
     
