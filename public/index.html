@@ -2631,6 +2631,8 @@ body:has(button:hover) #cur-ring { width: 60px; height: 60px; }
         <input class="cl-input" id="cl-company" placeholder="e.g. Google, Stripe, a Series B startup…" />
         <label class="cl-field-label">Role / Position</label>
         <input class="cl-input" id="cl-role" placeholder="e.g. Director of Technical Program Management" />
+        <label class="cl-field-label">Job Description</label>
+        <textarea class="cl-input cl-textarea" id="cl-jd" placeholder="Paste the job description here..." style="min-height:80px;"></textarea>
         <label class="cl-field-label">What makes this role exciting? (optional)</label>
         <textarea class="cl-input cl-textarea" id="cl-context" placeholder="e.g. AI-first product, scaling globally, building 0→1 platform…"></textarea>
         <div class="cl-btn-row">
@@ -3523,12 +3525,12 @@ document.querySelectorAll('.sdot').forEach(dot => {
     strengths: ["cross-functional program leadership at global scale","AI/ML and Gen AI strategy integration","OKR design and executive alignment","observability and platform engineering programs","cost optimization and P&L impact","organizational change management for 10,000+ people"]
   };
 
-  function buildLetter(company, role, context) {
+  function buildLetter(company, role, context, jd) {
     const today = new Date();
     const dateStr = today.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
-    const isAI = /ai|ml|machine learning|llm|gen ai|generative|artificial/i.test(role+context);
-    const isPlatform = /platform|infra|infrastructure|scale|cloud/i.test(role+context);
-    const isLeader = /director|vp|head|senior|principal|lead/i.test(role);
+    const isAI = /ai|ml|machine learning|llm|gen ai|generative|artificial/i.test(role+(context||'')+(jd||''));
+    const isPlatform = /platform|infra|infrastructure|scale|cloud/i.test(role+(context||'')+(jd||''));
+    const isLeader = /director|vp|head|senior|principal|lead/i.test(role+(jd||''));
     const impact1 = SANTANU_BIO.topImpact[0];
     const impact2 = isAI ? SANTANU_BIO.topImpact[3] : isPlatform ? SANTANU_BIO.topImpact[5] : SANTANU_BIO.topImpact[1];
     const impact3 = SANTANU_BIO.topImpact[2];
@@ -3580,19 +3582,22 @@ linkedin.com/in/santanumajumdar | topmate.io/santanumajumdar`;
   window.generateCoverLetter = function() {
     const co = document.getElementById('cl-company').value.trim();
     const role = document.getElementById('cl-role').value.trim();
+    const jd = document.getElementById('cl-jd').value.trim();
     const ctx = document.getElementById('cl-context').value.trim();
-    if (!co || !role) {
+    if (!co || !role || !jd) {
       if (!co) document.getElementById('cl-company').style.borderColor='rgba(220,80,80,.5)';
       if (!role) document.getElementById('cl-role').style.borderColor='rgba(220,80,80,.5)';
+      if (!jd) document.getElementById('cl-jd').style.borderColor='rgba(220,80,80,.5)';
       return;
     }
     document.getElementById('cl-company').style.borderColor='';
     document.getElementById('cl-role').style.borderColor='';
+    document.getElementById('cl-jd').style.borderColor='';
     const prog = document.getElementById('cl-progress');
     prog.classList.add('show');
     setTimeout(() => {
       prog.classList.remove('show');
-      currentLetter = buildLetter(co, role, ctx);
+      currentLetter = buildLetter(co, role, ctx, jd);
       const out = document.getElementById('cl-output');
       out.textContent = currentLetter;
       out.style.display = 'block';
@@ -3623,6 +3628,7 @@ linkedin.com/in/santanumajumdar | topmate.io/santanumajumdar`;
     document.getElementById('cl-step2').classList.remove('active');
     document.getElementById('cl-company').value='';
     document.getElementById('cl-role').value='';
+    document.getElementById('cl-jd').value='';
     document.getElementById('cl-context').value='';
     document.getElementById('cl-output').style.display='none';
   };
