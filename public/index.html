@@ -2667,7 +2667,12 @@ body:has(button:hover) #cur-ring { width: 60px; height: 60px; }
       <div id="sim-question-block">
         <div class="sim-q-cat" id="sim-q-cat">Category</div>
         <div class="sim-q-box" id="sim-q-text">Loading question…</div>
-        <label class="cl-field-label" style="margin-top:4px">Your Answer <span style="color:var(--muted);font-size:10px;letter-spacing:.1em">(use STAR method)</span></label>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:4px; margin-bottom:4px;">
+          <label class="cl-field-label" style="margin-top:0; margin-bottom:0;">Your Answer <span style="color:var(--muted);font-size:10px;letter-spacing:.1em">(use STAR method)</span></label>
+          <button id="sim-mic-btn" class="cl-btn outline" onclick="toggleSimMic()" style="padding:4px 10px; font-size:10px; display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.03);">
+            <span class="mic-icon" id="sim-mic-icon" style="font-size:12px;">🎤</span> <span id="sim-mic-label">Record Answer</span>
+          </button>
+        </div>
         <textarea class="sim-answer" id="sim-answer" placeholder="Describe the Situation, Task, Action, and Result…"></textarea>
         <div class="cl-btn-row" style="margin-top:14px">
           <button class="cl-btn" onclick="submitSimAnswer()" id="sim-submit-btn">Get AI Feedback →</button>
@@ -3798,6 +3803,78 @@ linkedin.com/in/santanumajumdar | topmate.io/santanumajumdar`;
     document.getElementById('sim-feedback').style.display='none';
     loadSimQuestion();
     document.getElementById('sim-question-block').scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  let recognition;
+  let isRecording = false;
+
+  window.toggleSimMic = function() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert('Your browser does not support Speech Recognition. Please use Google Chrome or Edge.');
+      return;
+    }
+    
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const btn = document.getElementById('sim-mic-btn');
+    const label = document.getElementById('sim-mic-label');
+    const icon = document.getElementById('sim-mic-icon');
+    const textarea = document.getElementById('sim-answer');
+
+    if (isRecording) {
+      if (recognition) recognition.stop();
+      return;
+    }
+
+    recognition = new SpeechRec();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    
+    recognition.onstart = function() {
+      isRecording = true;
+      btn.style.borderColor = '#e74c3c';
+      btn.style.color = '#e74c3c';
+      label.textContent = 'Listening (Click to stop)';
+      icon.style.animation = 'pulse-dot 1s infinite';
+    };
+    
+    recognition.onresult = function(event) {
+      let finalTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript + ' ';
+        }
+      }
+      if (finalTranscript) {
+        textarea.value += (textarea.value.length && !textarea.value.endsWith(' ') && !textarea.value.endsWith('\n') ? ' ' : '') + finalTranscript;
+        // Scroll textarea to bottom automatically when new text comes in
+        textarea.scrollTop = textarea.scrollHeight;
+      }
+    };
+    
+    recognition.onerror = function(event) {
+      console.error('Speech recognition error', event.error);
+      stopMic();
+    };
+    
+    recognition.onend = function() {
+      stopMic();
+    };
+    
+    function stopMic() {
+      isRecording = false;
+      btn.style.borderColor = '';
+      btn.style.color = '';
+      label.textContent = 'Record Answer';
+      icon.style.animation = 'none';
+      recognition = null;
+    }
+    
+    try {
+      recognition.start();
+    } catch(e) {
+      console.error('Failed to start recognition:', e);
+      stopMic();
+    }
   };
 })();
 
