@@ -3669,64 +3669,7 @@ linkedin.com/in/santanumajumdar | topmate.io/santanumajumdar`;
    FEATURE 6 — TPM INTERVIEW SIMULATOR
 ════════════════════════════════════════════ */
 (function(){
-  const QUESTIONS = [
-    {
-      cat:'Program Strategy',
-      q:'Tell me about a time you had to align multiple senior stakeholders with conflicting priorities on a program. How did you manage it?',
-      star:['S: Set context — org size, number of stakeholders, what was at stake','T: Your specific ownership (not just involvement)','A: Concrete steps — 1:1s, data, framework you used, trade-offs surfaced','R: Measurable outcome — decision made, timeline met, relationship preserved'],
-      checks:['stakeholder','align','conflict','priority','decision','leadership','executive','vp','director'],
-      model:'Strong answers name the stakeholders, describe the conflicting goals clearly, explain the framework used (e.g. DACI, data-backed trade-off analysis), and quantify the outcome — e.g. "reduced sign-off cycle from 6 weeks to 2 weeks."'
-    },
-    {
-      cat:'Execution & Delivery',
-      q:'Describe a complex, multi-team program you owned end-to-end. What was your delivery framework and how did you handle blockers?',
-      star:['S: Program scope, number of teams, timeline, business stakes','T: Your E2E ownership — what "end to end" meant for you','A: Framework used, cadence, escalation path, how you unblocked','R: On-time delivery, quality, stakeholder satisfaction'],
-      checks:['program','team','deliver','blocker','framework','risk','escalat','milestone','dependency'],
-      model:'The best answers describe a specific program (not generic), show ownership of the critical path, name a concrete blocking issue and how it was resolved, and close with a quantified result — e.g. "shipped 2 weeks ahead of schedule, $X impact."'
-    },
-    {
-      cat:'Data & Metrics',
-      q:'How do you define success for a technical program? Walk me through how you built OKRs or KPIs for a program you led.',
-      star:['S: What the program was, why metrics mattered','T: Your responsibility in defining them','A: How you chose the right metrics, who you aligned with, leading vs lagging indicators','R: How the metrics drove decisions and outcomes'],
-      checks:['okr','kpi','metric','success','measure','data','goal','result','outcome','leading','lagging'],
-      model:'Strong answers distinguish leading from lagging indicators, show how metrics were tied to business outcomes (not just activity), and demonstrate that the TPM drove accountability — e.g. weekly reviews that caused real decisions to change.'
-    },
-    {
-      cat:'Ambiguity & Problem Solving',
-      q:'Tell me about a time you had to lead a program with incomplete information or no clear requirements. How did you proceed?',
-      star:['S: What was undefined, why it mattered, what the time pressure was','T: Why you were the one to resolve the ambiguity','A: How you structured discovery — who you talked to, what you documented, how you time-boxed','R: Clarity achieved, decision made, program unblocked'],
-      checks:['ambig','unclear','undefined','requirement','discover','assumption','scope','clarif','structure'],
-      model:'The best answers show a systematic approach (not just "I figured it out"), name specific techniques like assumption logging, constraint mapping, or rapid prototyping, and demonstrate that the TPM moved the program forward rather than waiting for clarity.'
-    },
-    {
-      cat:'Leadership & Influence',
-      q:'Describe a situation where you had to influence a decision without direct authority. What was the outcome?',
-      star:['S: The decision at stake, who held the authority, what the tension was','T: Your goal and your constraint (no direct authority)','A: How you built the case — data, coalition building, framing','R: Decision made in your direction, or compromise that worked'],
-      checks:['influence','authority','without','decision','persuad','stakeholder','data','case','align'],
-      model:'Top answers are specific about what was at stake, show creative influence techniques (data storytelling, finding shared incentives, building allies), and demonstrate that the outcome was better because the TPM engaged rather than escalated.'
-    },
-    {
-      cat:'Risk Management',
-      q:'Walk me through how you identify, prioritize, and mitigate risks in a large program. Give a specific example.',
-      star:['S: Program context and what made risk management critical','T: Your ownership of the risk framework','A: How you identified, scored, communicated, and mitigated risks','R: Risk avoided or successfully mitigated with measurable impact'],
-      checks:['risk','mitigat','identify','priorit','impact','likelihood','contingency','escalat','monitor'],
-      model:'The best answers name a specific risk taxonomy (e.g. likelihood × impact matrix), describe the cadence of risk reviews, show how risks were communicated to leadership, and give a concrete example of a risk that was caught and mitigated before it became an issue.'
-    },
-    {
-      cat:'AI & Innovation',
-      q:'How are you incorporating AI or automation into your TPM practice? What is one process you have made smarter with technology?',
-      star:['S: What the manual/slow process was','T: Your initiative to improve it','A: What tool/AI approach you applied, how you implemented it','R: Time saved, quality improved, scale achieved'],
-      checks:['ai','ml','automat','tool','process','smart','llm','data','dashboard','observ','generat'],
-      model:'Strong answers are specific about the before/after — not just "I use AI tools." The best TPMs describe a concrete workflow that changed (e.g. automated status reporting, anomaly detection in program health data) and quantify the impact in hours saved or errors caught.'
-    },
-    {
-      cat:'Org Readiness & Change',
-      q:'Describe a program that required significant organizational change. How did you manage the people side of the transition?',
-      star:['S: What was changing and why it was disruptive','T: Your role in the change management plan','A: Comms strategy, training, resistance handling, feedback loops','R: Adoption rate, timeline, employee satisfaction'],
-      checks:['change','org','readiness','adopt','communicat','train','resist','transition','people','culture'],
-      model:'The best answers show that the TPM treated org change as a program in itself — with a stakeholder map, a comms plan with specific cadence, a mechanism to surface resistance, and a way to measure adoption. Quantified outcomes (e.g. "95% adoption in 6 weeks vs 12-week plan") are highly compelling.'
-    }
-  ];
+  let QUESTIONS = [];
 
   let currentQ = null, usedIdx = new Set();
 
@@ -3782,7 +3725,23 @@ linkedin.com/in/santanumajumdar | topmate.io/santanumajumdar`;
     document.getElementById('sim-overlay').classList.add('open');
     document.getElementById('sim-feedback').style.display='none';
     document.getElementById('sim-question-block').style.display='block';
-    loadSimQuestion();
+    
+    if (QUESTIONS.length === 0) {
+      document.getElementById('sim-q-cat').textContent = 'Loading...';
+      document.getElementById('sim-q-text').textContent = 'Fetching 500+ TPM Questions...';
+      fetch('./questions.json')
+        .then(r => r.json())
+        .then(data => {
+          QUESTIONS = data;
+          loadSimQuestion();
+        })
+        .catch(e => {
+          console.error('Failed to load questions', e);
+          document.getElementById('sim-q-text').textContent = 'Error loading questions dataset.';
+        });
+    } else {
+      loadSimQuestion();
+    }
   };
 
   window.loadSimQuestion = function() {
