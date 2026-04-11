@@ -1197,14 +1197,30 @@ body:has(button:hover) #cur-ring { width: 60px; height: 60px; }
   letter-spacing:.3em; text-transform:uppercase; color:var(--gold); margin-bottom:10px;
 }
 .sim-answer {
-  width:100%; min-height:120px; background:var(--ink2);
-  border:1px solid var(--border); color:var(--cream);
-  font-family:'DM Mono',monospace; font-size:12px;
-  padding:14px 16px; outline:none; resize:vertical;
-  transition:border-color .2s; line-height:1.7;
+  width:100%; min-height:120px; padding:16px 16px 44px 16px;
+  background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06);
+  color:#f0ece4; font-family:'DM Mono',monospace; font-size:13px; line-height:1.6;
+  border-radius:4px; outline:none; resize:vertical; transition:border-color .2s;
 }
 .sim-answer:focus { border-color:var(--border2); }
 .sim-answer::placeholder { color:var(--muted); }
+
+.sim-answer-wrapper { position:relative; width:100%; }
+.sim-mic-container { position:absolute; bottom:12px; right:12px; z-index:10; }
+.sim-mic-btn {
+  background:rgba(201,168,76,.06); border:1px solid rgba(201,168,76,.15);
+  color:var(--gold); border-radius:24px; padding:8px 14px;
+  font-family:'Syne',sans-serif; font-size:11px; font-weight:700;
+  letter-spacing:.05em; cursor:pointer; display:flex; align-items:center; gap:6px;
+  transition:all .25s ease;
+}
+.sim-mic-btn:hover { background:rgba(201,168,76,.15); border-color:rgba(201,168,76,.35); transform:translateY(-1px); }
+.sim-mic-btn .mic-icon { font-size:14px; }
+.sim-mic-btn.recording {
+  background:rgba(231,76,60,.12); border-color:rgba(231,76,60,.3); color:#e74c3c;
+}
+.sim-mic-btn.recording .mic-icon { animation: pulse-mic 1s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
+@keyframes pulse-mic { 0% { opacity: 0.6; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.15); } }
 .sim-feedback {
   display:none; margin-top:20px;
   background:var(--ink2); border:1px solid var(--border); padding:20px;
@@ -2667,13 +2683,15 @@ body:has(button:hover) #cur-ring { width: 60px; height: 60px; }
       <div id="sim-question-block">
         <div class="sim-q-cat" id="sim-q-cat">Category</div>
         <div class="sim-q-box" id="sim-q-text">Loading question…</div>
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:4px; margin-bottom:4px;">
-          <label class="cl-field-label" style="margin-top:0; margin-bottom:0;">Your Answer <span style="color:var(--muted);font-size:10px;letter-spacing:.1em">(use STAR method)</span></label>
-          <button id="sim-mic-btn" class="cl-btn outline" onclick="toggleSimMic()" style="padding:4px 10px; font-size:10px; display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.03);">
-            <span class="mic-icon" id="sim-mic-icon" style="font-size:12px;">🎤</span> <span id="sim-mic-label">Record Answer</span>
-          </button>
+        <label class="cl-field-label" style="margin-top:4px">Your Answer <span style="color:var(--muted);font-size:10px;letter-spacing:.1em">(use STAR method)</span></label>
+        <div class="sim-answer-wrapper">
+          <textarea class="sim-answer" id="sim-answer" placeholder="Describe the Situation, Task, Action, and Result…"></textarea>
+          <div class="sim-mic-container">
+            <button id="sim-mic-btn" class="sim-mic-btn" onclick="toggleSimMic()">
+              <span class="mic-icon" id="sim-mic-icon">🎙️</span> <span id="sim-mic-label">Record</span>
+            </button>
+          </div>
         </div>
-        <textarea class="sim-answer" id="sim-answer" placeholder="Describe the Situation, Task, Action, and Result…"></textarea>
         <div class="cl-btn-row" style="margin-top:14px">
           <button class="cl-btn" onclick="submitSimAnswer()" id="sim-submit-btn">Get AI Feedback →</button>
           <button class="cl-btn outline" onclick="loadSimQuestion()">Skip Question</button>
@@ -3831,10 +3849,8 @@ linkedin.com/in/santanumajumdar | topmate.io/santanumajumdar`;
     
     recognition.onstart = function() {
       isRecording = true;
-      btn.style.borderColor = '#e74c3c';
-      btn.style.color = '#e74c3c';
-      label.textContent = 'Listening (Click to stop)';
-      icon.style.animation = 'pulse-dot 1s infinite';
+      btn.classList.add('recording');
+      label.textContent = 'Listening...';
     };
     
     recognition.onresult = function(event) {
@@ -3862,10 +3878,8 @@ linkedin.com/in/santanumajumdar | topmate.io/santanumajumdar`;
     
     function stopMic() {
       isRecording = false;
-      btn.style.borderColor = '';
-      btn.style.color = '';
-      label.textContent = 'Record Answer';
-      icon.style.animation = 'none';
+      btn.classList.remove('recording');
+      label.textContent = 'Record';
       recognition = null;
     }
     
