@@ -393,7 +393,7 @@
     /* ── HERO PORTRAIT ── */
     .hero-container {
       display: grid;
-      grid-template-columns: 1fr 450px;
+      grid-template-columns: 1fr 420px;
       gap: 60px;
       align-items: center;
       position: relative;
@@ -417,21 +417,19 @@
     .portrait-frame {
       position: relative;
       width: 100%;
-      aspect-ratio: 1;
-      border-radius: 12px;
+      aspect-ratio: 3.2/4;
+      border-radius: 16px;
       overflow: hidden;
       border: 1px solid var(--border2);
-      box-shadow: 0 32px 64px rgba(0, 0, 0, .5);
+      box-shadow: 0 32px 80px rgba(0, 0, 0, .6);
+      background: var(--surface);
     }
 
     .portrait-frame::after {
       content: '';
       position: absolute;
       inset: 0;
-      border: 1px solid var(--gold);
-      opacity: .15;
-      margin: 12px;
-      border-radius: 8px;
+      background: linear-gradient(to bottom, transparent 60%, rgba(7, 8, 15, .8));
       pointer-events: none;
     }
 
@@ -439,23 +437,23 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: grayscale(10%) contrast(110%);
-      transition: transform .5s ease;
+      filter: contrast(105%) brightness(95%);
+      transition: transform .6s cubic-bezier(.16, 1, .3, 1);
     }
 
     .hero-portrait-wrap:hover .hero-portrait {
-      transform: scale(1.05);
+      transform: scale(1.04);
     }
 
     .portrait-glow {
       position: absolute;
-      top: -20px;
-      right: -20px;
-      width: 200px;
-      height: 200px;
+      bottom: -30px;
+      right: -30px;
+      width: 250px;
+      height: 250px;
       background: var(--gold);
-      filter: blur(120px);
-      opacity: .1;
+      filter: blur(140px);
+      opacity: .12;
       pointer-events: none;
     }
 
@@ -466,7 +464,7 @@
       }
       .hero-portrait-wrap {
         order: -1;
-        max-width: 400px;
+        max-width: 360px;
         margin: 0 auto;
       }
     }
