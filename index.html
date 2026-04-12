@@ -752,6 +752,92 @@
       border-color: var(--border2);
     }
 
+    /* ── ARTICLES ── */
+    .article-section {
+      padding: 96px 56px;
+      position: relative;
+      background: var(--ink);
+    }
+
+    .article-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+      margin-top: 40px;
+    }
+
+    .article-card {
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform .4s cubic-bezier(.16, 1, .3, 1), border-color .4s;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .article-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--gold);
+      background: rgba(255, 255, 255, .05);
+    }
+
+    .article-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .article-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .6s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    .article-card:hover .article-thumb img {
+      transform: scale(1.05);
+    }
+
+    .article-content {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .article-card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      line-height: 1.4;
+      color: var(--cream);
+      margin-bottom: 16px;
+      font-weight: 400;
+    }
+
+    .article-cta {
+      margin-top: auto;
+      font-size: 10px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .article-cta::after {
+      content: '→';
+      transition: transform .3s;
+    }
+
+    .article-card:hover .article-cta::after {
+      transform: translateX(4px);
+    }
+
     /* ── IMPACT ── */
     .impact-sec {
       background: var(--gold);
@@ -4493,6 +4579,45 @@
           <div style="font-size:11px;color:var(--muted)">Santanu Majumdar, PMP®, SPC®</div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ═══ ARTICLES ═══ -->
+  <section class="article-section" id="articles">
+    <div class="lbl">Santanu's Articles</div>
+    <div class="article-grid">
+      <!-- Article 1 -->
+      <a href="https://www.linkedin.com/pulse/decoding-tpm-santanu-majumdar-pmp-spc--xtx4c" target="_blank" class="article-card reveal">
+        <div class="article-thumb">
+          <img src="article_tpm.png" alt="Decoding TPM">
+        </div>
+        <div class="article-content">
+          <h3 class="article-card-title">Decoding TPM: What a Technical Program Manager Actually Does</h3>
+          <div class="article-cta">Read on LinkedIn</div>
+        </div>
+      </a>
+
+      <!-- Article 2 -->
+      <a href="https://www.linkedin.com/pulse/amazon-built-717b-company-16-principles-heres-what-santanu--usxmc" target="_blank" class="article-card reveal" style="transition-delay:.1s">
+        <div class="article-thumb">
+          <img src="article_amazon.png" alt="Amazon 16 Principles">
+        </div>
+        <div class="article-content">
+          <h3 class="article-card-title">Amazon Built a $717B Company on 16 Principles. Here's What Every Leader Should Steal!</h3>
+          <div class="article-cta">Read on LinkedIn</div>
+        </div>
+      </a>
+
+      <!-- Article 3 -->
+      <a href="https://www.linkedin.com/pulse/ai-kill-tpm-role-santanu-majumdar-pmp-spc--qrdtc" target="_blank" class="article-card reveal" style="transition-delay:.2s">
+        <div class="article-thumb">
+          <img src="article_ai.png" alt="Will AI Kill The TPM Role?">
+        </div>
+        <div class="article-content">
+          <h3 class="article-card-title">Will AI Kill The TPM Role? The Shocking Truth Revealed!</h3>
+          <div class="article-cta">Read on LinkedIn</div>
+        </div>
+      </a>
     </div>
   </section>
 
