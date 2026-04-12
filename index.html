@@ -381,14 +381,93 @@
     }
 
     @keyframes bounce {
-
       0%,
       100% {
         transform: rotate(45deg) translateY(0);
       }
-
       50% {
         transform: rotate(45deg) translateY(6px);
+      }
+    }
+
+    /* ── HERO PORTRAIT ── */
+    .hero-container {
+      display: grid;
+      grid-template-columns: 1fr 450px;
+      gap: 60px;
+      align-items: center;
+      position: relative;
+      z-index: 5;
+    }
+
+    .hero-portrait-wrap {
+      position: relative;
+      opacity: 0;
+      transform: translateX(40px);
+      animation: fadeRight 1s cubic-bezier(.16, 1, .3, 1) 1.4s both;
+    }
+
+    @keyframes fadeRight {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .portrait-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border2);
+      box-shadow: 0 32px 64px rgba(0, 0, 0, .5);
+    }
+
+    .portrait-frame::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid var(--gold);
+      opacity: .15;
+      margin: 12px;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .hero-portrait {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(10%) contrast(110%);
+      transition: transform .5s ease;
+    }
+
+    .hero-portrait-wrap:hover .hero-portrait {
+      transform: scale(1.05);
+    }
+
+    .portrait-glow {
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      width: 200px;
+      height: 200px;
+      background: var(--gold);
+      filter: blur(120px);
+      opacity: .1;
+      pointer-events: none;
+    }
+
+    @media (max-width: 1100px) {
+      .hero-container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .hero-portrait-wrap {
+        order: -1;
+        max-width: 400px;
+        margin: 0 auto;
       }
     }
 
@@ -3685,30 +3764,42 @@
 
   <!-- ═══ HERO ═══ -->
   <section class="hero" id="hero">
-    <div class="hero-bg-text">TPM</div>
-    <div class="hero-line"></div>
-    <div class="hero-eyebrow">// Senior Technical Program Management Leader · Amazon India</div>
-    <h1 class="hero-name">
-      <span class="line">Santanu</span>
-      <span class="line">Majumdar</span>
-    </h1>
-    <p class="hero-title">TPM Leader @ Amazon &nbsp;·&nbsp; PMP®, SPC® &nbsp;·&nbsp; Bangalore</p>
-    <blockquote class="hero-quote">"14+ years turning ambiguity into execution, complexity into clarity, and strategy
-      into shipped product — at global scale."</blockquote>
-    <div class="hero-stats">
-      <div>
-        <div class="stat-n"><span class="count-num" data-target="14">0</span>+</div>
-        <div class="stat-l">Years at Scale</div>
+    <div class="hero-bg-text">MAJUMDAR</div>
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-line"></div>
+        <div class="hero-eyebrow">// Senior Technical Program Management Leader · Amazon India</div>
+        <h1 class="hero-name">
+          <span class="line">Santanu</span>
+          <span class="line">Majumdar</span>
+        </h1>
+        <p class="hero-title">TPM Leader @ Amazon &nbsp;·&nbsp; PMP®, SPC® &nbsp;·&nbsp; Bangalore</p>
+        <blockquote class="hero-quote">"14+ years turning ambiguity into execution, complexity into clarity, and strategy
+          into shipped product — at global scale."</blockquote>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-n"><span class="count-num" data-target="14">0</span>+</div>
+            <div class="stat-l">Years at Scale</div>
+          </div>
+          <div>
+            <div class="stat-n">~$<span class="count-num" data-target="30">0</span>M</div>
+            <div class="stat-l">Revenue Impact</div>
+          </div>
+          <div>
+            <div class="stat-n"><span class="count-num" data-target="200">0</span>+</div>
+            <div class="stat-l">Global Collaborators</div>
+          </div>
+        </div>
       </div>
-      <div>
-        <div class="stat-n">$<span class="count-num" data-target="10">0</span>M</div>
-        <div class="stat-l">Revenue Impact</div>
-      </div>
-      <div>
-        <div class="stat-n"><span class="count-num" data-target="200">0</span>+</div>
-        <div class="stat-l">Global Collaborators</div>
+
+      <div class="hero-portrait-wrap">
+        <div class="portrait-glow"></div>
+        <div class="portrait-frame">
+          <img src="santanu_portrait.png" alt="Santanu Majumdar" class="hero-portrait">
+        </div>
       </div>
     </div>
+
     <div class="scroll-hint">
       <div class="scroll-arrow"></div>
       Scroll to explore
