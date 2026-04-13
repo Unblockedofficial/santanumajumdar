@@ -12,13 +12,31 @@
   <title>Santanu Majumdar — Senior TPM Leader</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&family=Syne:wght@400;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&family=Syne:wght@400;600;700;800&display=swap?v=16"
     rel="stylesheet">
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="manifest" href="./manifest.json?v=16">
+  <link rel="apple-touch-icon" href="./icon-192.png?v=16">
   <meta name="theme-color" content="#c9a84c">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="Santanu Majumdar — Senior TPM Leader">
+  <meta name="description" content="14+ years turning ambiguity into execution, complexity into clarity, and strategy into shipped product at global scale. Follow my interactive career map.">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://unblockedofficial.github.io/santanumajumdar/">
+  <meta property="og:title" content="Santanu Majumdar — Senior TPM Leader @ Amazon">
+  <meta property="og:description" content="Explore my interactive global career map and technical leadership impact. 14+ years of scale and strategy.">
+  <meta property="og:image" content="https://unblockedofficial.github.io/santanumajumdar/santanu_portrait.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://unblockedofficial.github.io/santanumajumdar/">
+  <meta property="twitter:title" content="Santanu Majumdar — Senior TPM Leader @ Amazon">
+  <meta property="twitter:description" content="Explore my interactive global career map and technical leadership impact. 14+ years of scale and strategy.">
+  <meta property="twitter:image" content="https://unblockedofficial.github.io/santanumajumdar/santanu_portrait.png">
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://unpkg.com/topojson@3"></script>
   <script>
@@ -4312,6 +4330,64 @@
             </svg>
             Download PDF Resume
           </a>
+
+          <button onclick="shareProfile()" class="share-profile-btn" style="
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 9px 23px;
+            font-family: 'Syne', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          ">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+            </svg>
+            Share My Profile
+          </button>
+
+          <style>
+            .share-profile-btn:hover {
+              background: var(--gold);
+              color: var(--ink);
+              box-shadow: 0 10px 20px rgba(201, 168, 76, 0.2);
+              transform: translateY(-2px);
+            }
+          </style>
+
+          <script>
+            async function shareProfile() {
+              const shareData = {
+                title: 'Santanu Majumdar — Senior TPM Leader',
+                text: 'Just explored Santanu Majumdar’s interactive TPM portfolio. From leading global programs at Amazon to building observability platforms at LinkedIn, his career impact is truly world-class. Check out his interactive career map here:',
+                url: 'https://unblockedofficial.github.io/santanumajumdar/'
+              };
+
+              if (navigator.share) {
+                try {
+                  await navigator.share(shareData);
+                  console.log('Profile shared successfully');
+                } catch (err) {
+                  console.log('Share aborted or failed:', err);
+                }
+              } else {
+                // Desktop Fallback: Open LinkedIn Share URL
+                const encodedUrl = encodeURIComponent(shareData.url);
+                const encodedText = encodeURIComponent(shareData.text);
+                // Note: LinkedIn off-site share mostly ignores text now, but it's good practice
+                const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+                window.open(linkedinUrl, '_blank', 'width=600,height=600');
+              }
+            }
+          </script>
 
           <div class="visitor-counter" style="
             display: flex;
