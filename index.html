@@ -137,21 +137,13 @@
       height: 60px;
     }
 
-    .cur-trail {
-      position: fixed;
-      width: 3px;
-      height: 3px;
-      background: var(--gold);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9998;
-      transform: translate(-50%, -50%);
-      animation: trailFade .7s ease-out forwards;
-    }
 
-    @keyframes trailFade {
-      0% { opacity: .7; transform: translate(-50%, -50%) scale(1); }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+    /* ── CURSOR TRAIL CANVAS ── */
+    #trail-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9990;
     }
 
     /* ── PARTICLES CANVAS ── */
@@ -4203,6 +4195,7 @@
   <!-- Cursor -->
   <div id="cur"></div>
   <div id="cur-ring"></div>
+  <canvas id="trail-canvas"></canvas>
 
   <!-- Particles -->
   <canvas id="particles-canvas"></canvas>
@@ -5946,19 +5939,92 @@
 
         <script>
 
-          // ── Cursor ──
-          const cur = document.getElementById('cur');
-          const ring = document.getElementById('cur-ring');
-          let mx = 0, my = 0, rx = 0, ry = 0;
+          // ── Cursor Trail Physics ──
+          const tCanvas = document.getElementById('trail-canvas');
+          const tCtx = tCanvas.getContext('2d');
+          let TW, TH, trailParticles = [];
+          
+          function resizeTrail() { 
+            TW = tCanvas.width = window.innerWidth;
+            TH = tCanvas.height = window.innerHeight;
+          }
+          window.addEventListener('resize', resizeTrail);
+          resizeTrail();
+
+          class TrailParticle {
+            constructor(x, y, vx, vy) {
+              this.x = x; this.y = y;
+              this.vx = vx; this.vy = vy;
+              this.life = 1.0;
+              this.decay = 0.015 + Math.random() * 0.02;
+              this.size = 2 + Math.random() * 3;
+            }
+            update() {
+              this.x += this.vx; this.y += this.vy;
+              this.vx *= 0.96; this.vy *= 0.96;
+              this.life -= this.decay;
+            }
+            draw() {
+              tCtx.beginPath();
+              tCtx.arc(this.x, this.y, this.size * this.life, 0, Math.PI * 2);
+              tCtx.fillStyle = `rgba(201, 168, 76, ${this.life * 0.8})`;
+              tCtx.fill();
+            }
+          }
+
+          let lastMx = 0, lastMy = 0;
           document.addEventListener('mousemove', e => {
+            const vX = e.clientX - mx;
+            const vY = e.clientY - my;
             mx = e.clientX; my = e.clientY;
             cur.style.left = mx + 'px'; cur.style.top = my + 'px';
-            const t = document.createElement('div');
-            t.className = 'cur-trail';
-            t.style.left = mx + 'px'; t.style.top = my + 'px';
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 700);
+            
+            // Spawn magical dust particles
+            const speed = Math.hypot(vX, vY);
+            const count = Math.min(6, Math.floor(speed / 4) + 1);
+            if (speed > 1) {
+              for (let i = 0; i < count; i++) {
+                trailParticles.push(new TrailParticle(
+                  mx, my, 
+                  (vX * 0.15) + (Math.random() - 0.5) * 2,
+                  (vY * 0.15) + (Math.random() - 0.5) * 2
+                ));
+              }
+            }
           });
+
+          (function animTrail() {
+            tCtx.clearRect(0, 0, TW, TH);
+            // Higher-end glow blending
+            tCtx.globalCompositeOperation = 'screen';
+            
+            for (let i = 0; i < trailParticles.length; i++) {
+              const p = trailParticles[i];
+              p.update();
+              if (p.life <= 0) {
+                trailParticles.splice(i, 1); i--; continue;
+              }
+              p.draw();
+              
+              // Liquid connections between trail particles
+              for (let j = i + 1; j < trailParticles.length; j++) {
+                const p2 = trailParticles[j];
+                const d = Math.hypot(p.x - p2.x, p.y - p2.y);
+                if (d < 45) {
+                  tCtx.beginPath();
+                  tCtx.moveTo(p.x, p.y);
+                  tCtx.lineTo(p2.x, p2.y);
+                  tCtx.strokeStyle = `rgba(201, 168, 76, ${0.15 * p.life * (1 - d / 45)})`;
+                  tCtx.lineWidth = 0.8 * p.life;
+                  tCtx.stroke();
+                }
+              }
+            }
+            
+            tCtx.globalCompositeOperation = 'source-over';
+            requestAnimationFrame(animTrail);
+          })();
+
           (function animRing() {
             rx += (mx - rx) * .13; ry += (my - ry) * .13;
             ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
