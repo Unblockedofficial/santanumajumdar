@@ -45,6 +45,7 @@
   </script>
   <style>
     :root {
+      /* Dark (Standard) Hub */
       --gold: #c9a84c;
       --gold-lt: #e8c96a;
       --gold-dk: #9a7a2e;
@@ -57,7 +58,65 @@
       --muted: rgba(240, 236, 228, 0.45);
       --border: rgba(201, 168, 76, 0.15);
       --border2: rgba(201, 168, 76, 0.3);
+      --bg-gradient: linear-gradient(135deg, #07080f 0%, #111420 100%);
     }
+
+    [data-theme='light'] {
+      --gold: #9a7a2e;
+      --gold-lt: #c9a84c;
+      --gold-dk: #7a5a1e;
+      --ink: #fcfaf7;
+      --ink2: #f0ece4;
+      --surface: #ffffff;
+      --surface2: #fcfaf7;
+      --cream: #1a1a1a;
+      --cream2: #444444;
+      --muted: rgba(0, 0, 0, 0.45);
+      --border: rgba(154, 122, 46, 0.15);
+      --border2: rgba(154, 122, 46, 0.3);
+      --bg-gradient: linear-gradient(135deg, #fcfaf7 0%, #ffffff 100%);
+    }
+
+    [data-theme='saffron'] {
+      --gold: #ff9933; /* Saffron */
+      --gold-lt: #ffcc66;
+      --gold-dk: #cc7700;
+      --ink: #000033; /* Royal Navy */
+      --ink2: #000055;
+      --surface: #000044;
+      --surface2: #000066;
+      --cream: #ffffff;
+      --cream2: #f0f0f0;
+      --muted: rgba(255, 255, 255, 0.6);
+      --border: rgba(255, 153, 51, 0.2);
+      --border2: rgba(255, 153, 51, 0.4);
+      --bg-gradient: linear-gradient(135deg, #000033 0%, #000055 100%);
+    }
+  </style>
+
+  <script>
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+
+      // Update Active Button
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.id === `t-${theme}`);
+      });
+
+      // Update Theme-Color Meta
+      const metaTheme = document.querySelector('meta[name="theme-color"]');
+      const colors = { dark: '#c9a84c', light: '#9a7a2e', saffron: '#ff9933' };
+      if (metaTheme) metaTheme.setAttribute('content', colors[theme]);
+    }
+
+    // Init on load
+    (function() {
+      const saved = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', saved);
+      window.addEventListener('DOMContentLoaded', () => setTheme(saved));
+    })();
+  </script>
 
     *,
     *::before,
@@ -1391,10 +1450,10 @@
     }
 
     .country {
-      fill: #0d0f1a;
-      stroke: rgba(201, 168, 76, 0.15);
+      fill: var(--ink2);
+      stroke: var(--border2);
       stroke-width: 0.5px;
-      transition: fill 0.3s;
+      transition: all 0.3s ease;
     }
 
     .country:hover {
@@ -1485,6 +1544,48 @@
       letter-spacing: .18em;
       text-transform: uppercase;
       color: var(--muted);
+    }
+
+    /* ── THEME TOGGLE ── */
+    .theme-toggle-wrap {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 3px;
+      gap: 2px;
+      margin-left: 12px;
+    }
+
+    .theme-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      font-size: 14px;
+    }
+
+    .theme-btn:hover {
+      color: var(--gold);
+      background: rgba(201, 168, 76, 0.1);
+    }
+
+    .theme-btn.active {
+      background: var(--gold);
+      color: var(--ink);
+      box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
+    }
+
+    [data-theme='light'] .theme-toggle-wrap {
+      background: rgba(0, 0, 0, 0.05);
     }
 
     /* ── SIDE NAV DOTS ── */
@@ -4228,6 +4329,13 @@
           </button>
         </div>
       </div>
+
+      <div class="theme-toggle-wrap">
+        <button class="theme-btn" id="t-dark" onclick="setTheme('dark')" title="Dark Mode">🌙</button>
+        <button class="theme-btn" id="t-light" onclick="setTheme('light')" title="Editorial Mode">☀️</button>
+        <button class="theme-btn" id="t-saffron" onclick="setTheme('saffron')" title="Saffron Mode">🔸</button>
+      </div>
+
       <a href="#about">About</a>
       <a href="#exp">Experience</a>
       <a href="#impact">Impact</a>
@@ -5872,6 +5980,17 @@
           function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
           resize(); window.addEventListener('resize', resize);
 
+          // Get RGB from CSS Variable
+          function getThemeRGB() {
+            const gold = getComputedStyle(document.documentElement).getPropertyValue('--gold').trim();
+            // Convert Hex to RGB
+            const hex = gold.replace('#', '');
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            return `${r},${g},${b}`;
+          }
+
           function Particle() {
             this.x = Math.random() * W;
             this.y = Math.random() * H;
@@ -5884,13 +6003,14 @@
 
           function drawParticles() {
             ctx.clearRect(0, 0, W, H);
+            const rgb = getThemeRGB();
             particles.forEach(p => {
               p.x += p.vx; p.y += p.vy;
               if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
               if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
               ctx.beginPath();
               ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-              ctx.fillStyle = `rgba(201,168,76,${p.alpha})`;
+              ctx.fillStyle = `rgba(${rgb},${p.alpha})`;
               ctx.fill();
             });
             particles.forEach((a, i) => {
@@ -5900,7 +6020,7 @@
                 if (d < 120) {
                   ctx.beginPath();
                   ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
-                  ctx.strokeStyle = `rgba(201,168,76,${.08 * (1 - d / 120)})`;
+                  ctx.strokeStyle = `rgba(${rgb},${.08 * (1 - d / 120)})`;
                   ctx.lineWidth = .5;
                   ctx.stroke();
                 }
