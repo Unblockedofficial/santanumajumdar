@@ -3786,9 +3786,32 @@
 
     /* ── PRINT STYLES ── */
     @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
       body {
-        background: white !important;
-        color: black !important;
+        background: #07080f !important; /* Force --ink */
+        color: #f0ece4 !important;    /* Force --cream */
+      }
+
+      /* Force visibility on all hidden/animated elements */
+      .reveal, 
+      .hero-name .line, 
+      .hero-title, 
+      .hero-quote, 
+      .hero-stats, 
+      .hero-portrait-wrap, 
+      .exp-card, 
+      .icard, 
+      .sg-t, 
+      .srow {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        animation: none !important;
+        transition: none !important;
       }
 
       .nav,
@@ -3799,87 +3822,77 @@
       .hero-bg-text,
       .footer,
       .pwa-install-banner,
-      .download-btn-wrap {
+      .download-btn-wrap,
+      .glow-div {
         display: none !important;
       }
 
       .hero {
         min-height: auto !important;
         padding: 40px !important;
-        background: white !important;
+        background: transparent !important;
       }
 
       .hero-container {
         display: block !important;
       }
 
-      .hero-portrait-wrap {
-        display: none !important;
-      }
-
       .hero-name {
-        font-size: 48px !important;
-        color: black !important;
-        margin-bottom: 8px !important;
+        font-size: 56px !important;
+        color: #c9a84c !important; /* --gold */
+        margin-bottom: 12px !important;
       }
 
       .hero-name .line {
-        transform: none !important;
-        animation: none !important;
         display: inline !important;
       }
 
       .hero-title {
-        color: #666 !important;
+        color: rgba(240, 236, 224, 0.7) !important;
         margin-top: 8px !important;
-        opacity: 1 !important;
-        animation: none !important;
       }
 
       .hero-quote {
-        margin-top: 16px !important;
-        font-size: 16px !important;
-        color: #333 !important;
-        border-left: 1px solid #c9a84c !important;
-        opacity: 1 !important;
-        animation: none !important;
+        margin-top: 24px !important;
+        font-size: 18px !important;
+        color: #f0ece4 !important;
+        border-left: 2px solid #c9a84c !important;
       }
 
       .hero-stats {
-        margin-top: 24px !important;
-        padding-top: 16px !important;
-        opacity: 1 !important;
-        animation: none !important;
-        border-top: 1px solid #eee !important;
-      }
-
-      .stat-item {
-        margin-bottom: 0 !important;
+        margin-top: 32px !important;
+        padding-top: 20px !important;
+        border-top: 1px solid rgba(201, 168, 76, 0.2) !important;
       }
 
       .section {
         padding: 40px !important;
+        background: transparent !important;
         page-break-inside: avoid;
       }
 
-      .section-header {
+      .lbl, .section-n {
+        color: rgba(201, 168, 76, 0.5) !important;
+      }
+
+      .sh, .section-t {
+        color: #f0ece4 !important;
+      }
+
+      h1, h2, h3, h4, h5, p, span, li, blockquote, div {
+        color: #f0ece4 !important; /* Default text to cream */
+      }
+
+      .gold-text, .stat-n, .exp-co, .sg-t {
+        color: #c9a84c !important; /* Force gold on highlights */
+      }
+
+      /* Fix for experience cards */
+      .exp-card {
+        background: #0d0f1a !important; /* --ink2 */
+        border: 1px solid rgba(201, 168, 76, 0.15) !important;
+        padding: 24px !important;
         margin-bottom: 24px !important;
-      }
-
-      .section-n {
-        color: #999 !important;
-      }
-
-      .section-t {
-        color: black !important;
-      }
-      
-      h1, h2, h3, p, span, li {
-        color: black !important;
-      }
-      
-      .gold-text, .var--gold {
-        color: #c9a84c !important;
       }
     }
   </style>
