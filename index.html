@@ -4230,47 +4230,15 @@
         </div>
 
         <script>
-          const introText = `Hi, I'm Santanu Majumdar — Senior Technical Program Manager at Amazon, based in Bangalore.
-
-I've spent 15 years doing one thing: walking into ambiguous, high-stakes, cross-org problems — and turning them into structured, measurable programs that actually ship.
-
-Across my career — at Amazon, LinkedIn, Citrix, Cisco, and Oracle — I've driven over 30 million dollars in revenue impact across Fortune organizations. At LinkedIn, I built the Observability platform from scratch — saving 5.7 million dollars a year and cutting incident detection time by 70%. At Amazon today, I lead global content trust programs spanning the US, EU, and APAC — at the intersection of AI, policy, and platform engineering.
-
-But here's what actually drives those numbers. I believe in "Earn Trust" — genuinely, not as a corporate value on a wall. Before I touch a product or a process, I invest in the people. I build real relationships with every engineer, stakeholder, and leader I work with. Because when people trust you — not just your title — programs move faster, decisions land cleaner, and teams stay.
-
-That's why I've grown teams from 6 to 22 with zero attrition. That's why SVPs trust my OKR frameworks. That's why the programs I own tend to ship — on time, with the people still standing.
-
-I also run Unblocked — a weekly newsletter for TPMs who lead at scale. No fluff. No corporate filter. Just what actually works.
-
-If you're a recruiter, a founder, or a TPM — I'd love to connect.
-
-Scroll down to see the work. Or book a session with me directly on Topmate.
-
-Let's build something remarkable.`;
-
           const voiceBtn = document.getElementById('voice-intro-btn');
           const voiceBtnText = document.getElementById('voice-btn-text');
           let isPlaying = false;
-          let queue = [];
-          let currentUtterance = null;
-
-          function getIndianVoice() {
-            const voices = window.speechSynthesis.getVoices();
-            return voices.find(v => v.name.includes('Rishi') || v.name.includes('Ravi')) ||
-                   voices.find(v => v.lang === 'en-IN' && (v.name.toLowerCase().includes('male') || v.name.includes('Microsoft'))) ||
-                   voices.find(v => v.lang === 'en-IN') ||
-                   voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('male')) ||
-                   voices[0];
-          }
-
-          function splitIntoSentences(text) {
-            // Split by punctuation followed by space or newline
-            return text.match(/[^.!?\n]+[.!?\n]*/g) || [text];
-          }
+          let audio = new Audio('./voice_intro.mp3');
 
           voiceBtn.addEventListener('click', () => {
             if (isPlaying) {
-              window.speechSynthesis.cancel();
+              audio.pause();
+              audio.currentTime = 0;
               stopPlayback();
             } else {
               startPlayback();
@@ -4278,50 +4246,28 @@ Let's build something remarkable.`;
           });
 
           function startPlayback() {
-            window.speechSynthesis.cancel();
-            isPlaying = true;
-            voiceBtn.classList.add('playing');
-            voiceBtnText.textContent = 'Stop Introduction';
-
-            // Split and filter empty segments
-            queue = splitIntoSentences(introText).filter(s => s.trim().length > 0);
-            speakNext();
-          }
-
-          function speakNext() {
-            if (!isPlaying || queue.length === 0) {
-              stopPlayback();
-              return;
-            }
-
-            const sentence = queue.shift();
-            currentUtterance = new SpeechSynthesisUtterance(sentence.trim());
-            const voice = getIndianVoice();
-            if (voice) currentUtterance.voice = voice;
-            
-            currentUtterance.pitch = 0.96; 
-            currentUtterance.rate = 0.95; 
-
-            currentUtterance.onend = () => {
-              if (isPlaying) speakNext();
-            };
-            
-            currentUtterance.onerror = (e) => {
-              console.error('Speech error:', e);
-              stopPlayback();
-            };
-
-            window.speechSynthesis.speak(currentUtterance);
+            audio.play()
+              .then(() => {
+                isPlaying = true;
+                voiceBtn.classList.add('playing');
+                voiceBtnText.textContent = 'Stop Introduction';
+              })
+              .catch(err => {
+                console.error('Audio playback error:', err);
+                alert('Voice Intro is loading. Please try again in a moment!');
+              });
           }
 
           function stopPlayback() {
             isPlaying = false;
-            queue = [];
             voiceBtn.classList.remove('playing');
             voiceBtnText.textContent = 'Listen to Voice Intro';
           }
 
-          window.speechSynthesis.onvoiceschanged = getIndianVoice;
+          audio.onended = stopPlayback;
+
+          // Preload for instant response
+          audio.load();
         </script>
 
         <script>
