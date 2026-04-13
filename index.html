@@ -19,6 +19,8 @@
   <meta name="theme-color" content="#c9a84c">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/topojson@3"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -1358,6 +1360,103 @@
     .btn-o:hover {
       border-color: var(--gold);
       color: var(--gold);
+    }
+
+    /* ── GLOBAL IMPACT MAP ── */
+    .impact-section {
+      padding: 120px 56px;
+      position: relative;
+      background: var(--ink);
+      overflow: hidden;
+    }
+
+    .impact-section .lbl {
+      margin-bottom: 48px;
+    }
+
+    .map-container {
+      width: 100%;
+      height: 600px;
+      position: relative;
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      cursor: grab;
+      z-index: 5;
+    }
+
+    .map-container:active {
+      cursor: grabbing;
+    }
+
+    .country {
+      fill: #0d0f1a;
+      stroke: rgba(201, 168, 76, 0.15);
+      stroke-width: 0.5px;
+      transition: fill 0.3s;
+    }
+
+    .country:hover {
+      fill: #1a1e30;
+    }
+
+    .map-pin {
+      fill: var(--gold);
+      stroke: var(--ink);
+      stroke-width: 1px;
+      pointer-events: all;
+      cursor: pointer;
+    }
+
+    .map-pulse {
+      fill: var(--gold);
+      opacity: 1;
+      pointer-events: none;
+    }
+
+    .map-tooltip {
+      position: absolute;
+      padding: 16px;
+      background: rgba(13, 15, 26, 0.95);
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      color: var(--gold);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 100;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .map-tooltip h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--cream);
+    }
+
+    .map-tooltip .program {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    @media (max-width: 768px) {
+      .impact-section {
+        padding: 60px 24px;
+      }
+      .map-container {
+        height: 400px;
+      }
     }
 
     /* ── FOOTER ── */
@@ -4727,6 +4826,118 @@
         <div class="id">Years Driving<br>Digital Transformation</div>
       </div>
     </div>
+  </section>
+
+  <!-- ═══ GLOBAL IMPACT MAP ── -->
+  <section class="impact-section" id="global-impact">
+    <div class="lbl">04 — Global Impact</div>
+    <div class="sh reveal">International<br><em>Trajectory</em></div>
+    
+    <div class="map-container reveal" id="map-container">
+      <div id="map-tooltip" class="map-tooltip"></div>
+      <svg id="world-map"></svg>
+    </div>
+
+    <script>
+      (function() {
+        const locations = [
+          { name: "Seattle", co: "Amazon", prog: "Global Content Trust", coords: [-122.3321, 47.6062] },
+          { name: "Bangalore", co: "Amazon", prog: "Senior TPM Leadership", coords: [77.5946, 12.9716] },
+          { name: "London", co: "Amazon / Citrix", prog: "EU Platform Strategy", coords: [-0.1278, 51.5074] },
+          { name: "Dubai", co: "Middle East Ops", prog: "Digital Transformation", coords: [55.2708, 25.2048] },
+          { name: "Santa Clara", co: "Cisco / Oracle", prog: "Silicon Valley Ops", coords: [-121.9552, 37.3541] },
+          { name: "New York", co: "LinkedIn", prog: "Strategic Partnerships", coords: [-74.0060, 40.7128] },
+          { name: "Miami", co: "Citrix", prog: "Americas Data Strategy", coords: [-80.1918, 25.7617] },
+          { name: "Belgium", co: "Org Readiness", prog: "Europe Operations", coords: [4.3517, 50.8503] }
+        ];
+
+        const container = document.getElementById('map-container');
+        const tooltip = document.getElementById('map-tooltip');
+
+        function initMap() {
+          const width = container.clientWidth;
+          const height = container.clientHeight;
+          
+          const svg = d3.select("#world-map")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", `0 0 ${width} ${height}`);
+
+          svg.selectAll("*").remove(); // Clear for resize
+          const g = svg.append("g");
+
+          const projection = d3.geoMercator()
+            .scale(width / 6.5)
+            .translate([width / 2.1, height / 1.4]);
+
+          const path = d3.geoPath().projection(projection);
+
+          const zoom = d3.zoom()
+            .scaleExtent([1, 8])
+            .on("zoom", (event) => {
+              g.attr("transform", event.transform);
+            });
+
+          svg.call(zoom);
+
+          d3.json("https://unpkg.com/world-atlas@1.1.4/world/110m.json").then(worldData => {
+            const countries = topojson.feature(worldData, worldData.objects.countries).features;
+
+            g.selectAll(".country")
+              .data(countries)
+              .enter().append("path")
+              .attr("class", "country")
+              .attr("d", path);
+
+            const pins = g.selectAll(".pin-group")
+              .data(locations)
+              .enter().append("g")
+              .attr("class", "pin-group");
+
+            pins.append("circle")
+              .attr("class", "map-pulse")
+              .attr("cx", d => projection(d.coords)[0])
+              .attr("cy", d => projection(d.coords)[1])
+              .attr("r", 2)
+              .each(function() { repeatPulse(d3.select(this)); });
+
+            pins.append("circle")
+              .attr("class", "map-pin")
+              .attr("cx", d => projection(d.coords)[0])
+              .attr("cy", d => projection(d.coords)[1])
+              .attr("r", 4)
+              .on("mouseover", (event, d) => {
+                tooltip.style.opacity = "1";
+                tooltip.innerHTML = `<h4>${d.name}</h4><p>${d.co}</p><span class="program">${d.prog}</span>`;
+                updateTooltipPos(event);
+              })
+              .on("mousemove", (event) => updateTooltipPos(event))
+              .on("mouseout", () => { tooltip.style.opacity = "0"; });
+          });
+
+          function repeatPulse(circle) {
+            circle
+              .attr("r", 2)
+              .attr("opacity", 0.8)
+              .transition()
+              .duration(2000)
+              .attr("r", 20)
+              .attr("opacity", 0)
+              .on("end", () => repeatPulse(circle));
+          }
+
+          function updateTooltipPos(event) {
+            const bounds = container.getBoundingClientRect();
+            const x = event.clientX - bounds.left + 15;
+            const y = event.clientY - bounds.top + 15;
+            tooltip.style.transform = `translate(${x}px, ${y}px)`;
+          }
+        }
+
+        window.addEventListener('resize', initMap);
+        setTimeout(initMap, 500); // Small delay to ensure container dimensions are ready
+      })();
+    </script>
   </section>
 
   <div class="glow-div"></div>
