@@ -4,6 +4,8 @@ const ASSETS = [
   './index.html',
   './questions.json',
   './icon.png',
+  './icon-192.png',
+  './icon-512.png',
   './santanu_portrait.png',
   './article_ai.png',
   './article_amazon.png',
