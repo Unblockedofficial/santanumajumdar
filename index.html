@@ -799,21 +799,45 @@
     .article-scroller-wrap {
       position: relative;
       margin-top: 48px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    /* Masking edges for a premium fade-out effect */
+    .article-scroller-wrap::before,
+    .article-scroller-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 150px;
+      height: 100%;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .article-scroller-wrap::before {
+      left: 0;
+      background: linear-gradient(to right, var(--ink), transparent);
+    }
+    .article-scroller-wrap::after {
+      right: 0;
+      background: linear-gradient(to left, var(--ink), transparent);
     }
 
     .article-scroller {
       display: flex;
       gap: 32px;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      padding: 20px 0 40px;
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE 10+ */
-      -webkit-overflow-scrolling: touch;
+      width: max-content;
+      animation: marquee 40s linear infinite;
+      padding: 24px 0;
     }
 
-    .article-scroller::-webkit-scrollbar {
-      display: none; /* Chrome/Safari */
+    .article-scroller:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
 
     .article-card {
@@ -824,7 +848,6 @@
       overflow: hidden;
       text-decoration: none;
       color: inherit;
-      scroll-snap-align: center;
       transition: all 0.5s cubic-bezier(.16, 1, .3, 1);
       display: flex;
       flex-direction: column;
@@ -838,14 +861,18 @@
       .article-section {
         padding: 60px 24px;
       }
+      .article-scroller-wrap::before,
+      .article-scroller-wrap::after {
+        width: 50px;
+      }
     }
 
     .article-card:hover {
-      transform: translateY(-12px) scale(1.02);
+      transform: translateY(-8px) scale(1.02);
       border-color: var(--gold);
       background: rgba(255, 255, 255, .05);
       box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(201, 168, 76, 0.1);
-      z-index: 2;
+      z-index: 10;
     }
 
     .article-thumb {
@@ -4903,38 +4930,14 @@
           </div>
         </a>
       </div>
-
-      <div class="scroll-track" style="
-        width: 100%;
-        height: 2px;
-        background: rgba(255, 255, 255, 0.05);
-        margin-top: 20px;
-        position: relative;
-        overflow: hidden;
-        border-radius: 2px;
-      ">
-        <div id="scroll-progress" style="
-          position: absolute;
-          left: 0;
-          top: 0;
-          height: 100%;
-          width: 0%;
-          background: var(--gold);
-          transition: width 0.1s linear;
-        "></div>
-      </div>
     </div>
 
     <script>
-      const scroller = document.getElementById('article-scroller');
-      const progress = document.getElementById('scroll-progress');
-
-      scroller.addEventListener('scroll', () => {
-        const maxScroll = scroller.scrollWidth - scroller.clientWidth;
-        const currentScroll = scroller.scrollLeft;
-        const percentage = (currentScroll / maxScroll) * 100;
-        progress.style.width = `${percentage}%`;
-      });
+      // Seamless News Scroll Auto-Cloner
+      const marqueeScroller = document.getElementById('article-scroller');
+      const cards = marqueeScroller.innerHTML;
+      // Triple the content to ensure continuous flow across all screen widths
+      marqueeScroller.innerHTML = cards + cards + cards;
     </script>
   </section>
 
