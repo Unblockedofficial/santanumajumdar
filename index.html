@@ -4076,14 +4076,10 @@
             const countEl = document.getElementById('v-count');
             const namespace = 'unblockedofficial.github.io';
             const key = 'santanumajumdar';
-            const hasVisited = localStorage.getItem('v_visited');
 
             try {
-              let url = `https://api.counterapi.dev/v1/${namespace}/${key}`;
-              if (!hasVisited) {
-                url += '/up';
-                localStorage.setItem('v_visited', 'true');
-              }
+              // Now counting EVERY refresh as requested
+              let url = `https://api.counterapi.dev/v1/${namespace}/${key}/up`;
 
               const response = await fetch(url);
               const data = await response.json();
