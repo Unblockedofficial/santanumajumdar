@@ -793,31 +793,59 @@
       padding: 96px 56px;
       position: relative;
       background: var(--ink);
+      overflow: hidden;
     }
 
-    .article-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    .article-scroller-wrap {
+      position: relative;
+      margin-top: 48px;
+    }
+
+    .article-scroller {
+      display: flex;
       gap: 32px;
-      margin-top: 40px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding: 20px 0 40px;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE 10+ */
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .article-scroller::-webkit-scrollbar {
+      display: none; /* Chrome/Safari */
     }
 
     .article-card {
-      background: rgba(255, 255, 255, .03);
+      flex: 0 0 380px;
+      background: rgba(255, 255, 255, .02);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 16px;
       overflow: hidden;
-      transition: transform .4s cubic-bezier(.16, 1, .3, 1), border-color .4s;
-      display: flex;
-      flex-direction: column;
       text-decoration: none;
       color: inherit;
+      scroll-snap-align: center;
+      transition: all 0.5s cubic-bezier(.16, 1, .3, 1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    @media (max-width: 768px) {
+      .article-card {
+        flex: 0 0 300px;
+      }
+      .article-section {
+        padding: 60px 24px;
+      }
     }
 
     .article-card:hover {
-      transform: translateY(-8px);
+      transform: translateY(-12px) scale(1.02);
       border-color: var(--gold);
       background: rgba(255, 255, 255, .05);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(201, 168, 76, 0.1);
+      z-index: 2;
     }
 
     .article-thumb {
@@ -825,13 +853,21 @@
       aspect-ratio: 16 / 9;
       overflow: hidden;
       background: var(--surface);
+      position: relative;
+    }
+
+    .article-thumb::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent, rgba(7, 8, 15, 0.4));
     }
 
     .article-thumb img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform .6s cubic-bezier(.16, 1, .3, 1);
+      transition: transform 0.8s cubic-bezier(.16, 1, .3, 1);
     }
 
     .article-card:hover .article-thumb img {
@@ -4832,40 +4868,74 @@
   <!-- ═══ ARTICLES ═══ -->
   <section class="article-section" id="articles">
     <div class="lbl">Santanu's Articles</div>
-    <div class="article-grid">
-      <!-- Article 1 -->
-      <a href="https://www.linkedin.com/pulse/decoding-tpm-santanu-majumdar-pmp-spc--xtx4c" target="_blank" class="article-card reveal">
-        <div class="article-thumb">
-          <img src="article_tpm.png" alt="Decoding TPM">
-        </div>
-        <div class="article-content">
-          <h3 class="article-card-title">Decoding TPM: What a Technical Program Manager Actually Does</h3>
-          <div class="article-cta">Read on LinkedIn</div>
-        </div>
-      </a>
+    <div class="article-scroller-wrap">
+      <div class="article-scroller" id="article-scroller">
+        <!-- Article 1 -->
+        <a href="https://www.linkedin.com/pulse/decoding-tpm-santanu-majumdar-pmp-spc--xtx4c" target="_blank" class="article-card reveal">
+          <div class="article-thumb">
+            <img src="article_tpm.png" alt="Decoding TPM">
+          </div>
+          <div class="article-content" style="padding: 24px;">
+            <h3 class="article-card-title" style="font-size: 18px; margin-bottom: 16px; line-height: 1.4;">Decoding TPM: What a Technical Program Manager Actually Does</h3>
+            <div class="article-cta" style="font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px;">Read on LinkedIn →</div>
+          </div>
+        </a>
 
-      <!-- Article 2 -->
-      <a href="https://www.linkedin.com/pulse/amazon-built-717b-company-16-principles-heres-what-santanu--usxmc" target="_blank" class="article-card reveal" style="transition-delay:.1s">
-        <div class="article-thumb">
-          <img src="article_amazon.png" alt="Amazon 16 Principles">
-        </div>
-        <div class="article-content">
-          <h3 class="article-card-title">Amazon Built a $717B Company on 16 Principles. Here's What Every Leader Should Steal!</h3>
-          <div class="article-cta">Read on LinkedIn</div>
-        </div>
-      </a>
+        <!-- Article 2 -->
+        <a href="https://www.linkedin.com/pulse/amazon-built-717b-company-16-principles-heres-what-santanu--usxmc" target="_blank" class="article-card reveal" style="transition-delay:.1s">
+          <div class="article-thumb">
+            <img src="article_amazon.png" alt="Amazon 16 Principles">
+          </div>
+          <div class="article-content" style="padding: 24px;">
+            <h3 class="article-card-title" style="font-size: 18px; margin-bottom: 16px; line-height: 1.4;">Amazon Built a $717B Company on 16 Principles. Every Leader Should Steal!</h3>
+            <div class="article-cta" style="font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px;">Read on LinkedIn →</div>
+          </div>
+        </a>
 
-      <!-- Article 3 -->
-      <a href="https://www.linkedin.com/pulse/ai-kill-tpm-role-santanu-majumdar-pmp-spc--qrdtc" target="_blank" class="article-card reveal" style="transition-delay:.2s">
-        <div class="article-thumb">
-          <img src="article_ai.png" alt="Will AI Kill The TPM Role?">
-        </div>
-        <div class="article-content">
-          <h3 class="article-card-title">Will AI Kill The TPM Role? The Shocking Truth Revealed!</h3>
-          <div class="article-cta">Read on LinkedIn</div>
-        </div>
-      </a>
+        <!-- Article 3 -->
+        <a href="https://www.linkedin.com/pulse/ai-kill-tpm-role-santanu-majumdar-pmp-spc--qrdtc" target="_blank" class="article-card reveal" style="transition-delay:.2s">
+          <div class="article-thumb">
+            <img src="article_ai.png" alt="Will AI Kill The TPM Role?">
+          </div>
+          <div class="article-content" style="padding: 24px;">
+            <h3 class="article-card-title" style="font-size: 18px; margin-bottom: 16px; line-height: 1.4;">Will AI Kill The TPM Role? The Shocking Truth Revealed!</h3>
+            <div class="article-cta" style="font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px;">Read on LinkedIn →</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="scroll-track" style="
+        width: 100%;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.05);
+        margin-top: 20px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 2px;
+      ">
+        <div id="scroll-progress" style="
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 100%;
+          width: 0%;
+          background: var(--gold);
+          transition: width 0.1s linear;
+        "></div>
+      </div>
     </div>
+
+    <script>
+      const scroller = document.getElementById('article-scroller');
+      const progress = document.getElementById('scroll-progress');
+
+      scroller.addEventListener('scroll', () => {
+        const maxScroll = scroller.scrollWidth - scroller.clientWidth;
+        const currentScroll = scroller.scrollLeft;
+        const percentage = (currentScroll / maxScroll) * 100;
+        progress.style.width = `${percentage}%`;
+      });
+    </script>
   </section>
 
   <div class="glow-div"></div>
