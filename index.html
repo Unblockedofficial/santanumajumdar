@@ -23,8 +23,21 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('Service Worker registered', reg))
+          .then(reg => {
+            console.log('Service Worker registered');
+            // Check for updates every time the page is opened
+            reg.update();
+          })
           .catch(err => console.log('Service Worker registration failed', err));
+      });
+
+      // Reload the page when the new service worker takes over
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+          window.location.reload();
+          refreshing = true;
+        }
       });
     }
   </script>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sm-portfolio-v6';
+const CACHE_NAME = 'sm-portfolio-v7';
 const ASSETS = [
   './',
   './index.html',
@@ -14,6 +14,7 @@ const ASSETS = [
 
 // Install Event
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('Caching shell assets');
