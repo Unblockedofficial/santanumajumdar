@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sm-portfolio-v15';
+const CACHE_NAME = 'sm-portfolio-v16';
 const ASSETS = [
   './',
   './index.html',
