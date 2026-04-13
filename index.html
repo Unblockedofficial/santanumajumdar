@@ -685,6 +685,149 @@
       margin-bottom: 60px;
     }
 
+    /* ── CAREER MAP ── */
+    .exp-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 48px;
+      margin-bottom: 60px;
+    }
+
+    .exp-header-flex .sh {
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
+
+    .career-map-wrap {
+      flex: 1;
+      position: relative;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      padding-top: 20px;
+    }
+
+    .cmap-svg {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      transform: translateY(-50%);
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .cmap-path-bg {
+      fill: none;
+      stroke: rgba(201, 168, 76, 0.1);
+      stroke-width: 1.5;
+    }
+
+    .cmap-path-draw {
+      fill: none;
+      stroke: var(--gold);
+      stroke-width: 1.5;
+      stroke-dasharray: 1200;
+      stroke-dashoffset: 1200;
+      filter: drop-shadow(0 0 8px var(--gold));
+      transition: stroke-dashoffset 2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .career-map-wrap.active .cmap-path-draw {
+      stroke-dashoffset: 0;
+    }
+
+    .cmap-nodes {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      z-index: 2;
+    }
+
+    .cmap-node {
+      position: relative;
+      width: 10px;
+      height: 10px;
+      background: var(--ink);
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: crosshair;
+    }
+
+    .career-map-wrap.active .cmap-node {
+      background: var(--gold);
+      box-shadow: 0 0 15px var(--gold);
+    }
+
+    .cmap-node::after {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .career-map-wrap.active .cmap-node::after {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+
+    .cmap-node:hover {
+      transform: scale(1.5);
+      box-shadow: 0 0 25px var(--gold);
+      z-index: 10;
+    }
+
+    .cmap-label {
+      position: absolute;
+      top: -32px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: clamp(8px, 1vw, 9.5px);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+      opacity: 0;
+      transition: all 0.5s ease;
+    }
+
+    .career-map-wrap.active .cmap-label {
+      opacity: 0.4;
+      top: -24px;
+    }
+
+    .cmap-node:hover .cmap-label {
+      opacity: 1;
+      color: var(--gold);
+      top: -28px;
+    }
+
+    @media (max-width: 1024px) {
+      .exp-header-flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+      }
+      .career-map-wrap {
+        width: 100%;
+        height: 100px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .career-map-wrap {
+        display: none; /* Hide for clean mobile experience */
+      }
+    }
+
     .sh em {
       font-style: italic;
       color: var(--gold);
@@ -4589,7 +4732,26 @@
   <!-- ═══ EXPERIENCE ═══ -->
   <section class="sec sec-alt" id="exp">
     <div class="lbl">02 — Experience</div>
-    <div class="sh reveal">Career<br><em>Trajectory</em></div>
+    
+    <div class="exp-header-flex">
+      <div class="sh reveal">Career<br><em>Trajectory</em></div>
+      
+      <div class="career-map-wrap reveal" id="career-map">
+        <svg class="cmap-svg" viewBox="0 0 1000 80" preserveAspectRatio="none">
+          <path class="cmap-path-bg" d="M0,40 C150,40 250,10 400,40 C550,70 750,40 1000,40" />
+          <path class="cmap-path-draw" id="cmap-path" d="M0,40 C150,40 250,10 400,40 C550,70 750,40 1000,40" />
+        </svg>
+        <div class="cmap-nodes">
+          <div class="cmap-node"><div class="cmap-label">Trainer</div></div>
+          <div class="cmap-node"><div class="cmap-label">System Engineer</div></div>
+          <div class="cmap-node"><div class="cmap-label">Senior SWE</div></div>
+          <div class="cmap-node"><div class="cmap-label">Team Lead</div></div>
+          <div class="cmap-node"><div class="cmap-label">Eng. Manager</div></div>
+          <div class="cmap-node"><div class="cmap-label">Leader</div></div>
+          <div class="cmap-node"><div class="cmap-label">Senior TPM</div></div>
+        </div>
+      </div>
+    </div>
 
     <!-- Amazon -->
     <div class="exp-card">
@@ -6104,6 +6266,27 @@
             entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
           }, { threshold: .12, rootMargin: '0px 0px -60px 0px' });
           document.querySelectorAll('.reveal, .exp-card').forEach(el => revealObs.observe(el));
+
+          // ── Career Map Observer ──
+          const mapObs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+              if (e.isIntersecting) {
+                const map = e.target;
+                const path = map.querySelector('.cmap-path-draw');
+                if (path) {
+                  const len = path.getTotalLength();
+                  path.style.strokeDasharray = len;
+                  path.style.strokeDashoffset = len;
+                  // Force reflow
+                  path.getBoundingClientRect();
+                  map.classList.add('active');
+                }
+                mapObs.unobserve(map);
+              }
+            });
+          }, { threshold: 0.5 });
+          const careerMap = document.getElementById('career-map');
+          if (careerMap) mapObs.observe(careerMap);
 
           // ── Skill bars ──
           const barObs = new IntersectionObserver(entries => {
