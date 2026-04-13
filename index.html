@@ -3774,6 +3774,114 @@
         transform: scale(1);
       }
     }
+    .download-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 30px rgba(201, 168, 76, 0.25);
+      filter: brightness(1.1);
+    }
+    
+    .download-btn:active {
+      transform: translateY(-2px);
+    }
+
+    /* ── PRINT STYLES ── */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+
+      .nav,
+      .chat-trigger,
+      .chat-interface,
+      .scroll-hint,
+      .hero-line,
+      .hero-bg-text,
+      .footer,
+      .pwa-install-banner,
+      .download-btn-wrap {
+        display: none !important;
+      }
+
+      .hero {
+        min-height: auto !important;
+        padding: 40px !important;
+        background: white !important;
+      }
+
+      .hero-container {
+        display: block !important;
+      }
+
+      .hero-portrait-wrap {
+        display: none !important;
+      }
+
+      .hero-name {
+        font-size: 48px !important;
+        color: black !important;
+        margin-bottom: 8px !important;
+      }
+
+      .hero-name .line {
+        transform: none !important;
+        animation: none !important;
+        display: inline !important;
+      }
+
+      .hero-title {
+        color: #666 !important;
+        margin-top: 8px !important;
+        opacity: 1 !important;
+        animation: none !important;
+      }
+
+      .hero-quote {
+        margin-top: 16px !important;
+        font-size: 16px !important;
+        color: #333 !important;
+        border-left: 1px solid #c9a84c !important;
+        opacity: 1 !important;
+        animation: none !important;
+      }
+
+      .hero-stats {
+        margin-top: 24px !important;
+        padding-top: 16px !important;
+        opacity: 1 !important;
+        animation: none !important;
+        border-top: 1px solid #eee !important;
+      }
+
+      .stat-item {
+        margin-bottom: 0 !important;
+      }
+
+      .section {
+        padding: 40px !important;
+        page-break-inside: avoid;
+      }
+
+      .section-header {
+        margin-bottom: 24px !important;
+      }
+
+      .section-n {
+        color: #999 !important;
+      }
+
+      .section-t {
+        color: black !important;
+      }
+      
+      h1, h2, h3, p, span, li {
+        color: black !important;
+      }
+      
+      .gold-text, .var--gold {
+        color: #c9a84c !important;
+      }
+    }
   </style>
 </head>
 
@@ -3879,6 +3987,35 @@
         <p class="hero-title">TPM Leader @ Amazon &nbsp;·&nbsp; PMP®, SPC® &nbsp;·&nbsp; Bangalore</p>
         <blockquote class="hero-quote">"14+ years turning ambiguity into execution, complexity into clarity, and strategy
           into shipped product — at global scale."</blockquote>
+        
+        <div class="download-btn-wrap" style="margin-top: 40px; opacity: 0; animation: fadeUp .6s ease 1.2s both;">
+          <button onclick="window.print()" class="download-btn" style="
+            background: var(--gold);
+            color: var(--ink);
+            border: none;
+            padding: 14px 32px;
+            font-family: 'Syne', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 20px rgba(201, 168, 76, 0.15);
+          ">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download PDF Resume
+          </button>
+        </div>
+
         <div class="hero-stats">
           <div>
             <div class="stat-n"><span class="count-num" data-target="14">0</span>+</div>
