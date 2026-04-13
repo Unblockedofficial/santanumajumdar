@@ -125,6 +125,72 @@
       opacity: .6;
     }
 
+    @keyframes pulse-mic {
+      0% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.4); }
+      70% { box-shadow: 0 0 0 15px rgba(201, 168, 76, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); }
+    }
+
+    .voice-intro-btn {
+      background: rgba(201, 168, 76, 0.1);
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      padding: 14px 28px;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .voice-intro-btn:hover {
+      background: var(--gold);
+      color: var(--ink);
+      transform: translateY(-2px);
+    }
+
+    .voice-intro-btn.playing {
+      background: var(--gold);
+      color: var(--ink);
+      animation: pulse-mic 1.5s infinite;
+    }
+
+    .wave-container {
+      display: none;
+      align-items: center;
+      gap: 3px;
+      height: 12px;
+    }
+
+    .voice-intro-btn.playing .wave-container {
+      display: flex;
+    }
+
+    .wave-bar {
+      width: 2px;
+      height: 100%;
+      background: var(--ink);
+      border-radius: 1px;
+      animation: wave-anim 1s ease-in-out infinite;
+    }
+
+    .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+
+    @keyframes wave-anim {
+      0%, 100% { height: 4px; }
+      50% { height: 12px; }
+    }
+
     @keyframes pulse {
       0% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.5); opacity: 0.5; }
@@ -4104,6 +4170,22 @@
           into shipped product — at global scale."</blockquote>
         
         <div class="download-btn-wrap" style="margin-top: 40px; opacity: 0; animation: fadeUp .6s ease 1.2s both; display: flex; align-items: center; gap: 24px; flex-wrap: wrap;">
+          <button id="voice-intro-btn" class="voice-intro-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+            <span id="voice-btn-text">Listen to Voice Intro</span>
+            <div class="wave-container">
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+            </div>
+          </button>
+
           <a href="./resume.pdf" download="Santanu_Majumdar_Resume.pdf" class="download-btn" style="
             background: var(--gold);
             color: var(--ink);
@@ -4146,6 +4228,78 @@
             <div style="width: 4px; height: 4px; border-radius: 50%; background: #4caf50; animation: pulse 2s infinite;"></div>
           </div>
         </div>
+
+        <script>
+          const introText = `Hi, I'm Santanu Majumdar — Senior TPM Leader at Amazon, based in Bangalore.
+
+I've spent 15 years doing one thing: walking into ambiguous, high-stakes, cross-org problems — and turning them into structured, measurable programs that actually ship.
+
+Across my career — at Amazon, LinkedIn, Citrix, Cisco, and Oracle — I've driven over 30 million dollars in revenue impact across Fortune organizations. At LinkedIn, I built the Observability platform from scratch — saving 5.7 million dollars a year and cutting incident detection time by 70%. At Amazon today, I lead global content trust programs spanning the US, EU, and APAC — at the intersection of AI, policy, and platform engineering.
+
+But here's what actually drives those numbers. I believe in "Earn Trust" — genuinely, not as a corporate value on a wall. Before I touch a product or a process, I invest in the people. I build real relationships with every engineer, stakeholder, and leader I work with. Because when people trust you — not just your title — programs move faster, decisions land cleaner, and teams stay.
+
+That's why I've grown teams from 6 to 22 with zero attrition. That's why SVPs trust my OKR frameworks. That's why the programs I own tend to ship — on time, with the people still standing.
+
+I also run Unblocked — a weekly newsletter for TPMs who lead at scale. No fluff. No corporate filter. Just what actually works.
+
+If you're a recruiter, a founder, or a TPM — I'd love to connect.
+
+Scroll down to see the work. Or book a session with me directly on Topmate.
+
+Let's build something remarkable.`;
+
+          const voiceBtn = document.getElementById('voice-intro-btn');
+          const voiceBtnText = document.getElementById('voice-btn-text');
+          let isPlaying = false;
+          let utterance = null;
+
+          function getIndianVoice() {
+            const voices = window.speechSynthesis.getVoices();
+            // Priority: Rishi (macOS/iOS), Ravi (Windows/Android), or any English/Indian voice
+            return voices.find(v => v.name.includes('Rishi') || v.name.includes('Ravi')) ||
+                   voices.find(v => v.lang === 'en-IN' && (v.name.toLowerCase().includes('male') || v.name.includes('Microsoft'))) ||
+                   voices.find(v => v.lang === 'en-IN') ||
+                   voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('male')) ||
+                   voices[0];
+          }
+
+          voiceBtn.addEventListener('click', () => {
+            if (isPlaying) {
+              window.speechSynthesis.cancel();
+              stopPlayback();
+            } else {
+              startPlayback();
+            }
+          });
+
+          function startPlayback() {
+            window.speechSynthesis.cancel(); // Clear any existing speech
+            utterance = new SpeechSynthesisUtterance(introText);
+            const voice = getIndianVoice();
+            if (voice) utterance.voice = voice;
+            
+            // Calibrate for professional ~35yo male tone
+            utterance.pitch = 0.95; 
+            utterance.rate = 0.92; // Slightly measured, authoritative speed
+
+            utterance.onend = stopPlayback;
+            utterance.onerror = stopPlayback;
+
+            window.speechSynthesis.speak(utterance);
+            isPlaying = true;
+            voiceBtn.classList.add('playing');
+            voiceBtnText.textContent = 'Stop Introduction';
+          }
+
+          function stopPlayback() {
+            isPlaying = false;
+            voiceBtn.classList.remove('playing');
+            voiceBtnText.textContent = 'Listen to Voice Intro';
+          }
+
+          // Preload voices
+          window.speechSynthesis.onvoiceschanged = getIndianVoice;
+        </script>
 
         <script>
           async function updateVisitorCount() {
