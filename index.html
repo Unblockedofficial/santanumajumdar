@@ -3786,32 +3786,21 @@
 
     /* ── PRINT STYLES ── */
     @media print {
-      * {
+      *, *::before, *::after {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
-      }
-
-      body {
-        background: #07080f !important; /* Force --ink */
-        color: #f0ece4 !important;    /* Force --cream */
-      }
-
-      /* Force visibility on all hidden/animated elements */
-      .reveal, 
-      .hero-name .line, 
-      .hero-title, 
-      .hero-quote, 
-      .hero-stats, 
-      .hero-portrait-wrap, 
-      .exp-card, 
-      .icard, 
-      .sg-t, 
-      .srow {
         opacity: 1 !important;
         visibility: visible !important;
         transform: none !important;
         animation: none !important;
         transition: none !important;
+        box-shadow: none !important;
+      }
+
+      body {
+        background: #07080f !important; /* Force --ink */
+        color: #f0ece4 !important;    /* Force --cream */
+        overflow: visible !important;
       }
 
       .nav,
@@ -3823,7 +3812,10 @@
       .footer,
       .pwa-install-banner,
       .download-btn-wrap,
-      .glow-div {
+      .glow-div,
+      .mq,
+      .portrait-glow,
+      .hero-portrait-wrap::after {
         display: none !important;
       }
 
@@ -3837,6 +3829,20 @@
         display: block !important;
       }
 
+      .hero-portrait-wrap {
+        display: flex !important;
+        justify-content: center !important;
+        margin-top: 30px !important;
+        opacity: 1 !important;
+      }
+
+      .portrait-frame {
+        width: 300px !important;
+        height: auto !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+      }
+
       .hero-name {
         font-size: 56px !important;
         color: #c9a84c !important; /* --gold */
@@ -3845,34 +3851,43 @@
 
       .hero-name .line {
         display: inline !important;
+        transform: none !important;
+        color: #c9a84c !important;
       }
 
       .hero-title {
-        color: rgba(240, 236, 224, 0.7) !important;
+        color: rgba(240, 236, 224, 0.8) !important;
         margin-top: 8px !important;
+        font-size: 14px !important;
       }
 
       .hero-quote {
         margin-top: 24px !important;
         font-size: 18px !important;
         color: #f0ece4 !important;
-        border-left: 2px solid #c9a84c !important;
+        border-left: 3px solid #c9a84c !important;
+        padding-left: 20px !important;
+        max-width: none !important;
       }
 
       .hero-stats {
         margin-top: 32px !important;
         padding-top: 20px !important;
-        border-top: 1px solid rgba(201, 168, 76, 0.2) !important;
+        border-top: 1px solid rgba(201, 168, 76, 0.3) !important;
+        display: flex !important;
+        gap: 40px !important;
       }
 
       .section {
-        padding: 40px !important;
+        padding: 60px 40px !important;
         background: transparent !important;
         page-break-inside: avoid;
+        opacity: 1 !important;
       }
 
       .lbl, .section-n {
-        color: rgba(201, 168, 76, 0.5) !important;
+        color: #c9a84c !important;
+        opacity: 0.6 !important;
       }
 
       .sh, .section-t {
@@ -3880,19 +3895,26 @@
       }
 
       h1, h2, h3, h4, h5, p, span, li, blockquote, div {
-        color: #f0ece4 !important; /* Default text to cream */
+        color: #f0ece4 !important;
       }
 
-      .gold-text, .stat-n, .exp-co, .sg-t {
-        color: #c9a84c !important; /* Force gold on highlights */
+      .gold-text, .stat-n, .exp-co, .sg-t, em {
+        color: #c9a84c !important;
+        font-style: normal !important;
       }
 
-      /* Fix for experience cards */
       .exp-card {
         background: #0d0f1a !important; /* --ink2 */
-        border: 1px solid rgba(201, 168, 76, 0.15) !important;
-        padding: 24px !important;
-        margin-bottom: 24px !important;
+        border: 1px solid rgba(201, 168, 76, 0.2) !important;
+        padding: 30px !important;
+        margin-bottom: 30px !important;
+        opacity: 1 !important;
+      }
+
+      .chip {
+        border: 1px solid #c9a84c !important;
+        color: #c9a84c !important;
+        background: transparent !important;
       }
     }
   </style>
@@ -4031,15 +4053,15 @@
 
         <div class="hero-stats">
           <div>
-            <div class="stat-n"><span class="count-num" data-target="14">0</span>+</div>
+            <div class="stat-n"><span class="count-num" data-target="14">14</span>+</div>
             <div class="stat-l">Years at Scale</div>
           </div>
           <div>
-            <div class="stat-n">~$<span class="count-num" data-target="30">0</span>M</div>
+            <div class="stat-n">~$<span class="count-num" data-target="30">30</span>M</div>
             <div class="stat-l">Revenue Impact</div>
           </div>
           <div>
-            <div class="stat-n"><span class="count-num" data-target="200">0</span>+</div>
+            <div class="stat-n"><span class="count-num" data-target="200">200</span>+</div>
             <div class="stat-l">Global Collaborators</div>
           </div>
         </div>
