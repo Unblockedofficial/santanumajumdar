@@ -1,0 +1,16 @@
+{
+  "name": "Santanu Majumdar — Senior TPM Leader",
+  "short_name": "SM | TPM",
+  "description": "AI-Powered Professional Profile and 1:1 TPM Coach.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#07080f",
+  "theme_color": "#c9a84c",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
+}
