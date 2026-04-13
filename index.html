@@ -5938,6 +5938,10 @@
         </div>
 
         <script>
+          // ── Globals ──
+          const cur = document.getElementById('cur');
+          const ring = document.getElementById('cur-ring');
+          let mx = 0, my = 0, rx = 0, ry = 0;
 
           // ── Cursor Trail Physics ──
           const tCanvas = document.getElementById('trail-canvas');
