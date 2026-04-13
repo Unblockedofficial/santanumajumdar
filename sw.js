@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sm-portfolio-v11';
+const CACHE_NAME = 'sm-portfolio-v12';
 const ASSETS = [
   './',
   './index.html',
@@ -9,7 +9,8 @@ const ASSETS = [
   './santanu_portrait.png',
   './article_ai.png',
   './article_amazon.png',
-  './article_tpm.png'
+  './article_tpm.png',
+  './voice_intro.mp3'
 ];
 
 // Install Event
